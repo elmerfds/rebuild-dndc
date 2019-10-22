@@ -7,7 +7,7 @@ Re-create containers that use another container's network stack (i.e. routing co
 - Install 'User Scripts' plugins from CA
 - Use the same script names
 - ParseDockerTemplate script
-- Tested on 6.8.0-rcxx
+- 6.8.0-rcxx is most probably not rquired but that's the last build I've tested this version of the script on.
 
 #### ParseDockerTemplate (Required)
 - Create a script called 'ParseDockerTemplate' on 'User Scripts'
