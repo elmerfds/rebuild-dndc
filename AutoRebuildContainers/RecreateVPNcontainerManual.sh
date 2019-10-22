@@ -4,7 +4,7 @@ ver=1.0.0
 
 #VARS
 RUNDOCKERTEMPLATE_SCRIPT='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script'
-inscope_containers=('ContainerA' 'ContainerB' 'ContainerB')  # replace with containers using your VPN container, case-sensitive
+inscope_containers=('ContainerA' 'ContainerB' 'ContainerC')  # replace with containers using your VPN container, case-sensitive
 docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user'
 
 echo
