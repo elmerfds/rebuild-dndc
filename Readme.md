@@ -17,7 +17,7 @@ Re-create containers that use another container's network stack (i.e. routing co
 #### RecreateVPNcontainers
 - Create a script called 'RecreateVPNcontainers' on 'User Scripts'
 - Edit script and set the variable `VPNCONTNAME=your_vpn_container_name` , by default it is set to `VPNCONTNAME=vpn`
-- Make sure you have your VPN container is running
+- Make sure you have your VPN container up & running
 - Make sure all containers that will be using the VPN container network stack are up & running.
 - Run the script & monitor the output.
 - If everything is working as expected, set it to run at whatever interval you prefer, e.g. 5mins i.e.  `*/5 * * * *`
