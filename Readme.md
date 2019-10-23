@@ -22,6 +22,7 @@ Re-create containers that use another container's network stack (i.e. routing co
 - Make sure all containers that will be using the VPN container network stack are up & running.
 - Run the script & monitor the output.
 - If everything is working as expected, set it to run at whatever interval you prefer, e.g. 5mins i.e.  `*/5 * * * *`
+- Try restarting, deleting & rebuilding the VPN container, the script should be able to detect & rebuild all containers relying on the VPN container.
 
 #### RecreateVPNcontainerManual (optional)
 - Create a script called 'RecreateVPNcontainersManual' on 'User Scripts'
