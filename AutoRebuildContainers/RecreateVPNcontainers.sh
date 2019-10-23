@@ -1,7 +1,6 @@
 #!/bin/bash
 #RecreateVPNcontainers
-#author: https://github.com/elmerfdz
-ver=3.0.6.4
+ver=3.0.6.5
 
 #VARS
 VPNCONTNAME=vpn #VPN Container name, replace that with your VPN container name
@@ -154,10 +153,8 @@ rebuild_mod()
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $CONTNAME" "docker rm $CONTNAME" "$BUILDCONT_CMD")
 
-    if [ "$getvpncontendpointid" != "$currentendpointid" ]
+    if [ "$getvpncontendpointid" != "$currentendpointid" ] || [ "$vpncontid" != "$contnetmode" ]
     then
-        if [ "$vpncontid" != "$contnetmode" ]
-        then 
             #Cycle through build commands
 	        for ((d=0; d < "${#build_stage_var[@]}"; d++)) 
 	        do
@@ -170,8 +167,7 @@ rebuild_mod()
                 echo
                 $build_stage_cmd
 	        done
-            was_rebuild=1
-        fi    
+            was_rebuild=1  
     fi
     
     if [ "$was_run" == 0 ]
