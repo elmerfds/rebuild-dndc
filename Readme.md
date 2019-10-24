@@ -9,13 +9,13 @@ Re-create containers that use another container's network stack (i.e. routing co
 - ParseDockerTemplate script
 - 6.8.0-rcxx is most probably not rquired but that's the last build I've tested this version of the script on.
 
-#### ParseDockerTemplate (Required/Dependency)
+#### ParseDockerTemplate (Dependency)
 - Create a script called 'ParseDockerTemplate' on 'User Scripts'
 - Set it to run 'At First Array Start Only' on 'User Scripts'
 - This script on it's own doesn't do anything without specifying any arguments.
 - Run this script once, so that the 'User Script' plugin copies the script files to /tmp/user.scripts/tmpScripts/ (required for 6.8.0-rcx releases), `File '' does not exist!` message
 
-#### RecreateVPNcontainers (Required/Main)
+#### RecreateVPNcontainers (Required-Main)
 - Create a script called 'RecreateVPNcontainers' on 'User Scripts'
 - Edit script and set the variable `VPNCONTNAME=your_vpn_container_name` , by default it is set to `VPNCONTNAME=vpn`
 - Make sure you have your VPN container up & running
