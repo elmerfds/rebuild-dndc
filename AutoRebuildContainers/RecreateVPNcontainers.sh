@@ -5,7 +5,7 @@ ver=3.0.6.7-1
 
 #USER CONFIGURABLE VARS
 VPNCONTNAME=vpn     #VPN Container name, replace this with your VPN container name - default container name 'vpn'
-PING_COUNT=4        #Number of times you want to ping the PING_IP before the script restarts the VPN container due to no connectivity, lower number might be too aggressive 
+PING_COUNT=4        #Number of times you want to ping the PING_IP before the script restarts the VPN container due to no connectivity, lower number might be too aggressive - default 4
 PING_IP='1.1.1.1'   #IP to ping to test connectivity - default CLOUDFLARE DNS
 VPNCONCHECK='yes'   #yes/no to check for VPN connectivity testing & reboot container - default 'yes'
 SLEEP_SECS=10       #Check for the approximate time it takes for your VPN container to reboot completely in seconds - default 10s
