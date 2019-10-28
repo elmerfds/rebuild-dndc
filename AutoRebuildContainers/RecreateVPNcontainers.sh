@@ -158,19 +158,19 @@ rebuild_mod()
 
     if [ "$getvpncontendpointid" != "$currentendpointid" ] || [ "$vpncontid" != "$contnetmode" ]
     then
-            #Cycle through build commands
-	        for ((d=0; d < "${#build_stage_var[@]}"; d++)) 
-	        do
-	            build_stage=${build_stage_var[$d]}
-	            build_stage_cmd=${build_stage_cmd_var[$d]}
-                echo
-                echo "---------------------------"
-                echo "  $build_stage $CONTNAME   "
-                echo "---------------------------"
-                echo
-                $build_stage_cmd
-	        done
-            was_rebuild=1  
+        #Cycle through build commands
+	    for ((d=0; d < "${#build_stage_var[@]}"; d++)) 
+	    do
+	        build_stage=${build_stage_var[$d]}
+	        build_stage_cmd=${build_stage_cmd_var[$d]}
+            echo
+            echo "---------------------------"
+            echo "  $build_stage $CONTNAME   "
+            echo "---------------------------"
+            echo
+            $build_stage_cmd
+	    done
+        was_rebuild=1  
     fi
     
     if [ "$was_run" == 0 ]
