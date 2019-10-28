@@ -79,22 +79,22 @@ inscope_container_vars()
     echo "C. DETECTING: IN-SCOPE CONTAINERS"
     echo     
     #Cycle & fetch container info
-	for ((a=0; a < "${#get_container_names[@]}"; a++)) 
-	do
-		pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
-    	if [ "$pull_contnet_ids" == "$vpncontid" ]
-    	then
+    for ((a=0; a < "${#get_container_names[@]}"; a++)) 
+    do
+        pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
+        if [ "$pull_contnet_ids" == "$vpncontid" ]
+        then
             list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
-			list_inscope_cont_ids+=(${get_container_ids[$a]})
-			list_inscope_contnames+=(${get_container_names[$a]})     
+            list_inscope_cont_ids+=(${get_container_ids[$a]})
+            list_inscope_contnames+=(${get_container_names[$a]})     
             no=${#list_inscope_contnames[@]}
-			echo "$no. ${get_container_names[$a]}"
+            echo "$no. ${get_container_names[$a]}"
             echo "- ContainerID: ${get_container_ids[$a]}"       
-			echo "- NetworkID: $pull_contnet_ids"              
-			echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       		
-			echo   
-    	fi 		
-	done
+            echo "- NetworkID: $pull_contnet_ids"              
+            echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       		
+            echo   
+        fi 		
+    done
    
     if [ "${list_inscope_contnames}" == '' ]
     then
