@@ -108,7 +108,7 @@ inscope_container_vars()
             echo "- No containers in scope."
             echo "- Make sure you have the containers routed through the VPN are running fine first."
         fi            
-     fi    
+    fi    
     #post process inscope containers
     inscope_container_vars_post
  
