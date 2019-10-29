@@ -7,7 +7,7 @@ RUN apk add --update docker openrc bash curl libxml2-utils && \
     mkdir /app
 
 # Setting environment variables
-ENV rundockertemplate_script="/script/ParseDockerTemplate.sh" \
+ENV rundockertemplate_script="/app/Rebuild-DNDC/ParseDockerTemplate.sh" \
     docker_tmpl_loc="/config/docker-templates"
 
 # Add local files
