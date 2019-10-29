@@ -19,8 +19,8 @@ contname=''
 templatename=''
 datetime=$(date +"%T %d-%m-%Y")
 mastercontepfile_loc='/config/rebuild-dndc'
-rundockertemplate_script='/script/ParseDockerTemplate.sh' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
-docker_tmpl_loc='/config/docker-templates'
+#rundockertemplate_script='/script/ParseDockerTemplate.sh' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
+#docker_tmpl_loc='/config/docker-templates'
 buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
