@@ -7,6 +7,7 @@ ver=3.0.6.7-d
 #mastercontname=vpn         #VPN Container name, replace this with your VPN container name - default container name 'vpn'
 #ping_count=4               #Number of times you want to ping the ping_ip before the script restarts the MASTER container due to no connectivity, lower number might be too aggressive - default 4
 #ping_ip='1.1.1.1'          #IP to ping to test connectivity - default CLOUDFLARE DNS
+#ping_ip_alt='8.8.8.8'      #Secondary IP to ping to test connectivity - default GOOGLE DNS.
 #mastercontconcheck='yes'   #yes/no to check for MASTER connectivity testing & reboot container - default 'yes'
 #sleep_secs=10              #Check for the approximate time it takes for your MASTER container to reboot completely in seconds - default 10s
 #unraid_notifications='no'  #Enable Unraid GUI notifications, yes/no
@@ -220,17 +221,25 @@ mastercontconnectivity_mod()
 #Check if MASTER container network has connectivity
 if [ "$mastercontconcheck" == "yes" ]
 then
+    echo "CHECKING"
     docker exec $mastercontname ping -c $ping_count $ping_ip &> /dev/null
     if [ "$?" == 0 ]
     then
         echo "- CONNECTIVITY: OK"
     else
-        echo "- CONNECTIVITY: BROKEN"
-        echo "---- restarting $mastercontname" container
-        docker restart $mastercontname &> /dev/null
-        echo "---- $mastercontname restarted"
-        echo "---- going to sleep for $sleep_secs seconds"
-        sleep $sleep_secs    
+        echo "ALT IP CHECK"
+        docker exec $mastercontname ping -c $ping_count $ping_ip_alt &> /dev/null
+        if [ "$?" == 0 ]
+        then
+            echo "- CONNECTIVITY: OK"
+        else
+            echo "- CONNECTIVITY: BROKEN"
+            echo "---- restarting $mastercontname" container
+            #docker restart $mastercontname &> /dev/null
+            echo "---- $mastercontname restarted"
+            echo "---- going to sleep for $sleep_secs seconds"
+            sleep $sleep_secs    
+        fi    
     fi
 fi
 }

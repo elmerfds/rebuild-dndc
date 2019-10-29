@@ -38,6 +38,15 @@ else
   echo "ping_ip specified: $ping_ip"
 fi
 
+echo '[---------- PING IP ALT----------]'
+if [ -z "$ping_ip_alt" ]
+  then
+  echo 'PING IP NOT SET - USING DEFAULT i.e. 8.8.8.8'
+  ping_ip='8.8.8.8'
+else
+  echo "ping_ip specified: $ping_ip_alt"
+fi
+
 echo '[---------- MASTER CONTAINER CONNECTIVITY ----------]'
 if [ -z "$mastercontconcheck" ]
   then

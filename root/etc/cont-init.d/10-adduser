@@ -29,7 +29,4 @@ User gid:    $(id -g abc)
 chown abc:abc /app
 chown abc:abc /config
 chown abc:abc /defaults
-chmod +x /app/Rebuild-DNDC*
-echo 'alias rebuild="bash /app/Rebuild-DNDC/Rebuild-DNDC.sh"' >> ~/.bashrc
-echo 'alias rebuildm="bash /app/Rebuild-DNDC/Rebuild-DNDC-Manual.sh"' >> ~/.bashrc
-source ~/.bashrc
+chmod +x /app/Rebuild-DNDC/*
