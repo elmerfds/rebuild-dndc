@@ -1,0 +1,81 @@
+#!/usr/bin/with-contenv bash
+echo '[---------- VARIABLES CHECK----------]'
+echo
+echo '[---------- DISCORD WEBHOOK ----------]'
+if [ -z "$discord_url" ]
+  then
+  echo 'NO DISCORD WEBHOOK SUPPLIED'
+  WEBHOOK=""
+else
+  echo 'Discord Webhook found...'
+  WEBHOOK="-d $discord_url"
+fi
+
+echo '[----------  MASTER container name ----------]'
+if [ -z "$mastercontname" ]
+  then
+  echo 'NO MASTER CONTAINER NAME SUPPLIED - USING DEFAULT i.e. vpn'
+  mastercontname='vpn'
+else
+  echo "MASTER container name specified = $mastercontname"
+fi
+
+echo '[---------- PING COUNT ----------]'
+if [ -z "$ping_count" ]
+  then
+  echo 'PING COUNT NOT SET - USING DEFAULT i.e. 4'
+  ping_count='4'
+else
+  echo "ping_count specified: $ping_count "
+fi
+
+echo '[---------- PING IP ----------]'
+if [ -z "$ping_ip" ]
+  then
+  echo 'PING IP NOT SET - USING DEFAULT i.e. 1.1.1.1'
+  ping_ip='1.1.1.1'
+else
+  echo "ping_ip specified: $ping_ip"
+fi
+
+echo '[---------- MASTER CONTAINER CONNECTIVITY ----------]'
+if [ -z "$mastercontconcheck" ]
+  then
+  echo 'MASTER CONTAINER CONNECTIVITY CHECK NOT SET - USING DEFAULT i.e. yes'
+  mastercontconcheck='yes'
+else
+  echo "mastercontconcheck specified: $mastercontconcheck"
+fi
+
+echo '[---------- SLEEP SECONDS ----------]'
+if [ -z "$sleep_secs" ]
+  then
+  echo 'SLEEP SECONDS NOT SPECIFIED AFTER $mastercontname CONTAINER RESTART - USING DEFAULT i.e. 10'
+  sleep_secs='10'
+else
+  echo "sleep_secs specified: $sleep_secs"
+fi
+
+echo '[---------- CRON SCHEDULE ----------]'
+if [ -z "$cron" ]
+  then
+  echo 'NO CRON SUPPLIED - USING DEFAULT CRON OF: 5 2,11 * * *'
+  CRON='5 2,11 * * *'
+else
+  echo "CRON set: $cron"
+fi
+
+echo '[---------- RUN AT STARTUP ----------]'
+if [ "$startup" = true ] ; then
+  echo 'Running at startup now'
+  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
+else
+  echo 'Skipping run at startup'
+fi
+
+echo '[---------- CRON JOB SETUP ----------]'
+echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
+echo 'CRON Job has been set...'
+echo 'Starting CRON Service now...'
+crond -l 2 -f
+echo
