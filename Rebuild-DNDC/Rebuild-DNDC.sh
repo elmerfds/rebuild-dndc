@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.0.6.7-d
+ver=3.0.6.8-d
 
 #USER CONFIGURABLE VARS - Uncomment VARS
 #mastercontname=vpn         #VPN Container name, replace this with your VPN container name - default container name 'vpn'
@@ -20,13 +20,14 @@ contname=''
 templatename=''
 datetime=$(date +"%T %d-%m-%Y")
 mastercontepfile_loc='/config/rebuild-dndc'
-#rundockertemplate_script='/script/ParseDockerTemplate.sh' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
-#docker_tmpl_loc='/config/docker-templates'
 buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
+#DISCORD NOTIFICATION VARS
+discord_username="Rebuild-DNDC"
+discord_avatar="https://i.imgur.com/9OFN3IJ.png"
 
 
 #NOTIFICATIONS
@@ -35,11 +36,11 @@ recreatecont_notify_complete()
     echo "REBUILDING: ${recreatecont_notify_complete_msg[*]} Completed"
     if [ "$unraid_notifications" == "yes" ]
     then    
-        /usr/local/emhttp/webGui/scripts/notify -i "normal"  -s "Rebuild-DNDC"  -d "- REBUILDING: ${recreatecont_notify_complete_msg[*]} Completed "
+        /usr/local/emhttp/webGui/scripts/notify -i "normal"  -s "Rebuild-DNDC"  -d "- REBUILD: ${recreatecont_notify_complete_msg[*]} Completed "
     fi
     if [ "$discord_notifications" == "yes" ]
     then        
-        ./discord-notify.sh "- REBUILDING: ${recreatecont_notify_complete_msg[*]} Completed"  &> /dev/null
+        ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - Completed!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0x66ff33" --author-icon "$discord_avatar" --footer "$ver" --footer-icon "$discord_avatar"  &> /dev/null
     fi
 }
 
@@ -54,7 +55,7 @@ recreatecont_notify()
         fi
         if [ "$discord_notifications" == "yes" ]
         then          
-            ./discord-notify.sh "- REBUILDING: $mastercontname container Endpoint doesn't match"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - In Progress!" --description "- $mastercontname container Endpoint doesn't match!" --color "0xb30000" --author-icon "$discord_avatar" --footer "$ver" --footer-icon "$discord_avatar"  &> /dev/null
         fi
     elif [ "$contnetmode" != "$mastercontid" ]
     then
@@ -65,7 +66,7 @@ recreatecont_notify()
         fi
         if [ "$discord_notifications" == "yes" ]
         then            
-            ./discord-notify.sh "- REBUILDING: ${recreatecont_notify_complete_msg[*]}"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - In Progress!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$discord_avatar" --footer "$ver" --footer-icon "$discord_avatar"  &> /dev/null
         fi
     fi 
 }
@@ -84,7 +85,7 @@ first_run()
         fi
         if [ "$discord_notifications" == "yes" ]
         then        
-            ./discord-notify.sh "Rebuild-DNDC - FIRST-RUN: Setup Complete"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "FIRST-RUN" --description "- Setup Complete" --color "0x66ff33" --author-icon "$discord_avatar" --footer "$ver" --footer-icon "$discord_avatar"  &> /dev/null
         fi
         was_run=1
     elif [ -d "$mastercontepfile_loc" ] && [ -e "$mastercontepfile_loc/mastercontepid.tmp" ] 
@@ -221,13 +222,11 @@ mastercontconnectivity_mod()
 #Check if MASTER container network has connectivity
 if [ "$mastercontconcheck" == "yes" ]
 then
-    echo "CHECKING"
     docker exec $mastercontname ping -c $ping_count $ping_ip &> /dev/null
     if [ "$?" == 0 ]
     then
         echo "- CONNECTIVITY: OK"
     else
-        echo "ALT IP CHECK"
         docker exec $mastercontname ping -c $ping_count $ping_ip_alt &> /dev/null
         if [ "$?" == 0 ]
         then

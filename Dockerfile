@@ -2,7 +2,7 @@ FROM alpine:3.10
 LABEL MAINTAINER="eafxx"
 
 # Prerequisites
-RUN apk add --update docker openrc bash curl libxml2-utils && \ 
+RUN apk add --update docker openrc bash curl libxml2-utils jq && \ 
     rc-update add docker boot && \
     mkdir /app
 
