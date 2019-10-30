@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.0.6.8-d
+ver=3.7.0-a
 
 #USER CONFIGURABLE VARS - Uncomment VARS
 #mastercontname=vpn         #VPN Container name, replace this with your VPN container name - default container name 'vpn'
@@ -12,8 +12,8 @@ ver=3.0.6.8-d
 #sleep_secs=10              #Check for the approximate time it takes for your MASTER container to reboot completely in seconds - default 10s
 #unraid_notifications='no'  #Enable Unraid GUI notifications, yes/no
 #discord_notifications='no' #Enable Discord notifications, yes/no
-#rundockertemplate_script='/script/ParseDockerTemplate.sh' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
-#docker_tmpl_loc='/config/docker-templates'
+#rundockertemplate_script='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
+#docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user' #Docker template location on Unraid
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -33,7 +33,7 @@ discord_avatar="https://i.imgur.com/9OFN3IJ.png"
 #NOTIFICATIONS
 recreatecont_notify_complete()
 {
-    echo "REBUILDING: ${recreatecont_notify_complete_msg[*]} Completed"
+    echo "REBUILDING - Completed!: ${recreatecont_notify_complete_msg[*]}"
     if [ "$unraid_notifications" == "yes" ]
     then    
         /usr/local/emhttp/webGui/scripts/notify -i "normal"  -s "Rebuild-DNDC"  -d "- REBUILD: ${recreatecont_notify_complete_msg[*]} Completed "
@@ -107,6 +107,7 @@ check_masterendpointid()
     elif [ "$getmastercontendpointid" != "$currentendpointid" ]
     then
         echo "B. ALERT: MASTER container Endpoint doesn't match"
+        recreatecont_notify
         echo
         inscope_container_vars        
     fi 
@@ -268,7 +269,6 @@ check_masterendpointid
 echo
 if [ "$was_rebuild" == 1 ]
 then 
-    echo "- Re-created: ${recreatecont_notify_complete_msg[@]}"
     recreatecont_notify_complete
 fi
 echo 
