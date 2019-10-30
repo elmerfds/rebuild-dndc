@@ -11,6 +11,16 @@ else
   WEBHOOK="-d $discord_url"
 fi
 
+echo '[---------- DISCORD NOTIFICATIONS----------]'
+if [ -z "$discord_notifications" ]
+  then
+  echo 'DISCORD NOTIFICATIONS DISABLED'
+  discord_notifications="no"
+else
+  echo 'DISCORD NOTIFICATIONS ENABLED'
+  discord_notifications="yes"
+fi
+
 echo '[----------  MASTER container name ----------]'
 if [ -z "$mastercontname" ]
   then
