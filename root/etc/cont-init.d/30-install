@@ -93,6 +93,21 @@ else
   echo 'Skipping run at startup'
 fi
 
+if [ "$discord_notifications" == "yes" ]
+then
+  echo '[---------- VARIABLES IN USE ----------]'
+  ./discord-notify.sh \
+  --webhook-url=$discord_url \
+  --username "Rebuild-DNDC" \
+  --avatar "https://i.imgur.com/9OFN3IJ.png" \
+  --title "VARIABLES IN USE" \
+  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $startup\n- ParseDockerTemplate Script:- $rundockertemplate_script\n- DockerTemplate Folder:- $docker_tmpl_loc" \
+  --color "0x66ff33" \
+  --author-icon "https://i.imgur.com/9OFN3IJ.png" \
+  --footer-icon "https://i.imgur.com/9OFN3IJ.png"  &> /dev/null
+  echo
+fi
+
 echo '[---------- CRON JOB SETUP ----------]'
 echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
 echo 'CRON Job has been set...'
