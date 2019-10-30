@@ -103,8 +103,8 @@ then
   --title "VARIABLES IN USE" \
   --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
   --color "0x66ff33" \
-  --author-icon "https://i.imgur.com/9OFN3IJ.png" \
-  --footer-icon "https://i.imgur.com/9OFN3IJ.png"  &> /dev/null
+  --author-icon "https://i.imgur.com/34T8oWE.png" \
+  --footer-icon "https://i.imgur.com/34T8oWE.png"  &> /dev/null
   echo
 fi
 
