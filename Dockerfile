@@ -9,7 +9,8 @@ RUN apk add --update docker openrc bash curl libxml2-utils jq && \
 # Setting environment variables
 ENV rundockertemplate_script="/app/Rebuild-DNDC/ParseDockerTemplate.sh" \
     docker_tmpl_loc="/config/docker-templates" \
-    mastercontepfile_loc="/config/rebuild-dndc"
+    mastercontepfile_loc="/config/rebuild-dndc" \
+    rdndc_logo="https://i.imgur.com/o2BGYJq.png"
 
 # Add local files
 COPY Rebuild-DNDC/ /app/Rebuild-DNDC

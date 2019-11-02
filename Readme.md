@@ -1,6 +1,6 @@
 # UnRAIDscripts
 
-## AutoRebuildContainers
+## Rebuild-DNDC
 Re-create containers that use another container's network stack (i.e. routing container traffic through a VPN container)
 
 ### Prerequisites
@@ -15,7 +15,7 @@ Re-create containers that use another container's network stack (i.e. routing co
 - This script on it's own doesn't do anything without specifying any arguments.
 - Run this script once, so that the 'User Script' plugin copies the script files to /tmp/user.scripts/tmpScripts/ (required for 6.8.0-rcx releases), `File '' does not exist!` message
 
-#### RecreateVPNcontainers (Required-Main)
+#### Rebuild-DNDC (Required-Main)
 - Create a script called 'RecreateVPNcontainers' on 'User Scripts'
 - Edit script and set the variable `VPNCONTNAME=your_vpn_container_name` , by default it is set to `VPNCONTNAME=vpn`
 - Make sure you have your VPN container up & running
@@ -24,7 +24,7 @@ Re-create containers that use another container's network stack (i.e. routing co
 - If everything is working as expected, set it to run at whatever interval you prefer, e.g. 5mins i.e.  `*/5 * * * *`
 - Try restarting, deleting & rebuilding the VPN container, the script should be able to detect & rebuild all containers relying on the VPN container.
 
-#### RecreateVPNcontainerManual (optional)
+#### Rebuild-DNDC-Manual (optional)
 - Create a script called 'RecreateVPNcontainersManual' on 'User Scripts'
 - Edit the line `inscope_containers=('ContainerA' 'ContainerB' 'ContainerC')` . Replace ContainerA/B/C with the container names that use the VPN container network.
 - This script can come in handy during times when for whatever reason the 'RecreateVPNcontainer' has failed to detect/rebuild the containers.
