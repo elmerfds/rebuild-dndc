@@ -1,11 +1,9 @@
 #!/bin/bash
 #author: https://github.com/elmerfdz
-ver=1.0.0
+ver=1.1.0
 
 #VARS
-RUNDOCKERTEMPLATE_SCRIPT='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script'
-inscope_containers=('ContainerA' 'ContainerB' 'ContainerC')  # replace with containers using your VPN container, case-sensitive
-docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user'
+inscope_containers=("$@") 
 
 echo
 echo "CREATE CONTAINERS MANUALLY"
@@ -16,6 +14,6 @@ do
     echo
     echo "--Build ${inscope_containers[$a]}"
     echo
-    $RUNDOCKERTEMPLATE_SCRIPT -v ${inscope_cont_tmpl[$a]}
+    $rundockertemplate_script -v ${inscope_cont_tmpl[$a]}
     echo
 done
