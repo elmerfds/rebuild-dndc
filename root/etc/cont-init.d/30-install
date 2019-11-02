@@ -1,5 +1,7 @@
 #!/usr/bin/with-contenv bash
 chmod +x /app/Rebuild-DNDC/*
+cp /app/Rebuild-DNDC/rebuild /bin
+cp /app/Rebuild-DNDC/rebuildm /bin
 echo '[---------- VARIABLES CHECK----------]'
 echo
 echo '[---------- DISCORD WEBHOOK ----------]'

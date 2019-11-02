@@ -14,9 +14,6 @@ ENV rundockertemplate_script="/app/Rebuild-DNDC/ParseDockerTemplate.sh" \
     discord_username="Rebuild-DNDC" \
     discord_avatar="$rdndc_logo"
 
-RUN echo 'alias rebuild="bash /app/Rebuild-DNDC/Rebuild-DNDC.sh"' >> /root/.bashrc  && \
-    echo 'alias rebuildm="bash /app/Rebuild-DNDC/Rebuild-DNDC-Manual.sh"' >> /root/.bashrc 
-
 # Add local files
 COPY Rebuild-DNDC/ /app/Rebuild-DNDC
 COPY root/ /
