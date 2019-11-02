@@ -4,7 +4,7 @@
 ver=3.8.0-a
 
 #USER CONFIGURABLE VARS - Uncomment VARS
-##################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ####################################################################################
+########################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ###########################################################################################
 
 #mastercontname=vpn                                     #VPN Container name, replace this with your VPN container name - default container name 'vpn'
 #ping_count=4                                           #Number of times you want to ping the ping_ip before the script restarts the MASTER container due to no connectivity, lower number might be too aggressive - default 4
@@ -13,12 +13,11 @@ ver=3.8.0-a
 #mastercontconcheck='yes'                               #yes/no to check for MASTER connectivity testing & reboot container - default 'yes'
 #sleep_secs=10                                          #Check for the approximate time it takes for your MASTER container to reboot completely in seconds - default 10s
 #unraid_notifications='no'                              #Enable Unraid GUI notifications, yes/no
-#discord_notifications='no'                             #Enable Discord notifications, yes/no
 #mastercontepfile_loc='/tmp/user.scripts/rebuild-dndc'  #location to store temporary files - default /tmp/user.scripts/rebuild-dndc
 #rundockertemplate_script='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
 #docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user' #Docker template location on Unraid - default /boot/config/plugins/dockerMan/templates-use
 
-#################################################################################### READ & UNCOMENT (#)  THE ABOVE VARS ########################################################################################
+############################################################################################ READ & UNCOMENT (#)  THE ABOVE VARS ############################################################################################
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -29,9 +28,6 @@ mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
-#DISCORD NOTIFICATION VARS
-discord_username="Rebuild-DNDC"
-discord_avatar="$rdndc_logo"
 
 
 #NOTIFICATIONS

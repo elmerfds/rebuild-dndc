@@ -98,7 +98,7 @@ then
   echo '[---------- VARIABLES IN USE ----------]'
   ./discord-notify.sh \
   --webhook-url=$discord_url \
-  --username "Rebuild-DNDC" \
+  --username "$discord_username" \
   --avatar "$rdndc_logo" \
   --title "VARIABLES IN USE" \
   --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
