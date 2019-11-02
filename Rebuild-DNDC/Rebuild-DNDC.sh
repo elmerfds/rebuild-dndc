@@ -31,7 +31,7 @@ get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 #DISCORD NOTIFICATION VARS
 discord_username="Rebuild-DNDC"
-discord_avatar=$rdndc_logo
+discord_avatar="$rdndc_logo"
 
 
 #NOTIFICATIONS
