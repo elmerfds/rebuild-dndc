@@ -17,25 +17,25 @@ fi
 #[---------- DISCORD NOTIFICATIONS ----------]
 if [ "$discord_notifications" == "yes" ]
 then
-  echo '- Discord notifications ENABLED'
+  echo '- Discord notifications enabled'
 else
-  echo '- Discord notifications DISABLED'
+  echo '- Discord notifications disabled'
   discord_notifications="no"
 fi
 
 #[----------  MASTER container name ----------]
 if [ -z "$mastercontname" ]
 then
-  echo "- Master container name not SET, Exiting"
+  echo "- Master container name not set, exiting"
   exit 1
 else
-  echo "- Master container name SET = $mastercontname"
+  echo "- Master container name set: $mastercontname"
 fi
 
 #[---------- PING COUNT ----------]
 if [ -z "$ping_count" ]
 then
-  echo "- Ping count NOT SET, default - 4"
+  echo "- Ping count not set, default - 4"
   ping_count='4'
 else
   echo "- Ping count specified: $ping_count"
@@ -44,7 +44,7 @@ fi
 #[---------- PING IP ----------]
 if [ -z "$ping_ip" ]
 then
-  echo "- Ping IP NOT SET, default - 1.1.1.1"
+  echo "- Ping IP not set, default - 1.1.1.1"
   ping_ip='1.1.1.1'
 else
   echo "- Ping IP specified: $ping_ip"
@@ -53,31 +53,31 @@ fi
 #[---------- PING IP ALT----------]
 if [ -z "$ping_ip_alt" ]
 then
-  echo "- Ping IP ALT NOT SET, default - 8.8.8.8"
+  echo "- Ping IP alt not set, default - 8.8.8.8"
   ping_ip_alt='8.8.8.8'
 else
-  echo "- Ping IP ALT SET: $ping_ip_alt"
+  echo "- Ping IP alt set: $ping_ip_alt"
 fi
 
 #[---------- MASTER CONTAINER CONNECTIVITY ----------]
 if [ "$mastercontconcheck" == "yes" ] 
 then
-    echo '- Master container connectivity check ENABLED'
+    echo '- Master container connectivity check enabled'
 elif [ "$mastercontconcheck" == "no" ]
 then  
-    echo '- Master container connectivity check DISABLED' 
+    echo '- Master container connectivity check disabled' 
 else
-  echo '- Master container connectivity check not SET, enabled by default'
+  echo '- Master container connectivity check not set, enabled by default'
   mastercontconcheck='yes'
 fi
 
 #[---------- SLEEP SECONDS ----------]
 if [ -z "$sleep_secs" ]
 then
-    echo "Sleep secs NOT SET after $mastercontname container restart, default - 10"
+    echo "- Sleep secs NOT SET after $mastercontname container restart, default - 10"
     sleep_secs='10'
 else
-    echo "sleep_secs specified: $sleep_secs"
+    echo "- Sleep secs SET: $sleep_secs"
 fi
 
 #[---------- CRON SCHEDULE ----------]
@@ -86,21 +86,22 @@ then
   echo 'No CRON schedule set, default CRON - 5 2,11 * * *'
   CRON='5 2,11 * * *'
 else
-  echo "CRON set: $cron"
+  echo "- CRON schedule set: $cron"
 fi
 
 #[---------- RUN AT STARTUP ----------]
 if [ "$startup" = true ]
 then
-  echo 'Running at startup now'
+  echo '- Running at startup now'
   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
 else
-  echo 'Skipping run at startup'
+  echo '- Skipping run at startup'
 fi
 
 if [ "$discord_notifications" == "yes" ]
 then
-  echo '[---------- VARIABLES IN USE ----------]'
+#[---------- VARIABLES IN USE ----------]
+  echo "- Push variables in use notification to Discord"
   ./discord-notify.sh \
   --webhook-url=$discord_url \
   --username "$discord_username" \
@@ -115,7 +116,7 @@ fi
 
 #[---------- CRON JOB SETUP ----------]
 echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
-echo '- CRON job has been set...'
+echo '- CRON job has been set'
 echo '- Starting CRON service now...'
 crond -l 2 -f
 echo
