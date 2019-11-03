@@ -3,7 +3,7 @@
 #author: https://github.com/elmerfdz
 ver=3.8.0-a
 
-#USER CONFIGURABLE VARS - Uncomment VARS
+#USER CONFIGURABLE VARS - Uncomment VARS -- Non-Docker use only!
 ########################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ###########################################################################################
 
 #mastercontname=vpn                                     #VPN Container name, replace this with your VPN container name - default container name 'vpn'
@@ -102,7 +102,6 @@ check_masterendpointid()
     if [ "$getmastercontendpointid" == "$currentendpointid" ]
     then
         echo "B. SKIPPING: MASTER CONTAINER ENDPOINT IS CURRENT"     
-        echo
         inscope_container_vars
     elif [ "$getmastercontendpointid" != "$currentendpointid" ]
     then
