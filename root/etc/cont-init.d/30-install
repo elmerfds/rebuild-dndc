@@ -89,18 +89,9 @@ else
   echo "- CRON schedule set: $cron"
 fi
 
-#[---------- RUN AT STARTUP ----------]
-if [ "$startup" = true ]
-then
-  echo '- Running at startup now'
-  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
-else
-  echo '- Skipping run at startup'
-fi
-
+#[---------- VARIABLES IN USE DISCORD NOTIFICATION ----------]
 if [ "$discord_notifications" == "yes" ]
 then
-#[---------- VARIABLES IN USE ----------]
   echo "- Push variables in use notification to Discord"
   ./discord-notify.sh \
   --webhook-url=$discord_url \
@@ -111,6 +102,15 @@ then
   --color "0x66ff33" \
   --author-icon "$rdndc_logo" \
   --footer-icon "$rdndc_logo"  &> /dev/null
+fi
+
+#[---------- RUN AT STARTUP ----------]
+if [ "$startup" = true ]
+then
+  echo '- Running at startup now'
+  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
+else
+  echo '- Skipping run at startup'
 fi
 
 #[---------- CRON JOB SETUP ----------]
