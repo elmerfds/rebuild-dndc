@@ -1,7 +1,2 @@
 #!/bin/bash
-run_cont=("$@")
-for ((a=0; a < "${#run_cont[@]}"; a++)) 
-do
-    bash /app/Rebuild-DNDC/Rebuild-DNDC-Manual.sh ${run_cont[$a]}
-    echo
-done
+bash /app/Rebuild-DNDC/Rebuild-DNDC-Manual.sh "$@"

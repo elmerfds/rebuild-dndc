@@ -6,7 +6,10 @@ ver=1.1.0
 inscope_containers=("$@") 
 
 echo
-echo "CREATE CONTAINERS MANUALLY"
+echo "-------------------------------"
+echo " Rebuild-DNDC-Manual v$ver     "
+echo "-------------------------------"
+echo
 
 for ((a=0; a < "${#inscope_containers[@]}"; a++)) 
 do
