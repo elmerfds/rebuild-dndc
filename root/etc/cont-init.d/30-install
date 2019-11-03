@@ -4,90 +4,94 @@ cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
 echo '[---------- VARIABLES CHECK ----------]'
 echo
-echo '[---------- DISCORD WEBHOOK ----------]'
+#[---------- DISCORD WEBHOOK ----------]
 if [ -z "$discord_url" ]
 then
-  echo 'NO DISCORD WEBHOOK SUPPLIED'
+  echo '- Discord webhook not set'
   WEBHOOK=""
 else
-  echo 'Discord Webhook found...'
+  echo '- Discord webhook set'
   WEBHOOK="-d $discord_url"
 fi
 
-echo '[---------- DISCORD NOTIFICATIONS ----------]'
-if [ "$discord_notifications" == yes ]
+#[---------- DISCORD NOTIFICATIONS ----------]
+if [ "$discord_notifications" == "yes" ]
 then
-  echo 'DISCORD NOTIFICATIONS ENABLED'
+  echo '- Discord notifications ENABLED'
 else
-  echo 'DISCORD NOTIFICATIONS DISABLED'
+  echo '- Discord notifications DISABLED'
   discord_notifications="no"
 fi
 
-echo '[----------  MASTER container name ----------]'
+#[----------  MASTER container name ----------]
 if [ -z "$mastercontname" ]
 then
-  echo 'NO MASTER CONTAINER NAME SUPPLIED - USING DEFAULT i.e. vpn'
-  mastercontname='vpn'
+  echo "- Master container name not SET, Exiting"
+  exit 1
 else
-  echo "MASTER container name specified = $mastercontname"
+  echo "- Master container name SET = $mastercontname"
 fi
 
-echo '[---------- PING COUNT ----------]'
+#[---------- PING COUNT ----------]
 if [ -z "$ping_count" ]
 then
-  echo 'PING COUNT NOT SET - USING DEFAULT i.e. 4'
+  echo "- Ping count NOT SET, default - 4"
   ping_count='4'
 else
-  echo "ping_count specified: $ping_count "
+  echo "- Ping count specified: $ping_count"
 fi
 
-echo '[---------- PING IP ----------]'
+#[---------- PING IP ----------]
 if [ -z "$ping_ip" ]
 then
-  echo 'PING IP NOT SET - USING DEFAULT i.e. 1.1.1.1'
+  echo "- Ping IP NOT SET, default - 1.1.1.1"
   ping_ip='1.1.1.1'
 else
-  echo "ping_ip specified: $ping_ip"
+  echo "- Ping IP specified: $ping_ip"
 fi
 
-echo '[---------- PING IP ALT----------]'
+#[---------- PING IP ALT----------]
 if [ -z "$ping_ip_alt" ]
 then
-  echo 'PING IP NOT SET - USING DEFAULT i.e. 8.8.8.8'
+  echo "- Ping IP ALT NOT SET, default - 8.8.8.8"
   ping_ip_alt='8.8.8.8'
 else
-  echo "ping_ip_alt specified: $ping_ip_alt"
+  echo "- Ping IP ALT SET: $ping_ip_alt"
 fi
 
-echo '[---------- MASTER CONTAINER CONNECTIVITY ----------]'
-if [ "$mastercontconcheck" == yes ] ; 
+#[---------- MASTER CONTAINER CONNECTIVITY ----------]
+if [ "$mastercontconcheck" == "yes" ] 
 then
-    echo 'MASTER CONTAINER CONNECTIVITY CHECK ENABLED'
+    echo '- Master container connectivity check ENABLED'
+elif [ "$mastercontconcheck" == "no" ]
+then  
+    echo '- Master container connectivity check DISABLED' 
 else
-  echo 'MASTER CONTAINER CONNECTIVITY CHECK NOT DISABLED - default: enabled'
+  echo '- Master container connectivity check not SET, enabled by default'
   mastercontconcheck='yes'
 fi
 
-echo '[---------- SLEEP SECONDS ----------]'
+#[---------- SLEEP SECONDS ----------]
 if [ -z "$sleep_secs" ]
 then
-    echo 'SLEEP SECONDS NOT SPECIFIED AFTER $mastercontname CONTAINER RESTART - USING DEFAULT i.e. 10'
+    echo "Sleep secs NOT SET after $mastercontname container restart, default - 10"
     sleep_secs='10'
 else
     echo "sleep_secs specified: $sleep_secs"
 fi
 
-echo '[---------- CRON SCHEDULE ----------]'
+#[---------- CRON SCHEDULE ----------]
 if [ -z "$cron" ]
 then
-  echo 'NO CRON SUPPLIED - USING DEFAULT CRON OF: 5 2,11 * * *'
+  echo 'No CRON schedule set, default CRON - 5 2,11 * * *'
   CRON='5 2,11 * * *'
 else
   echo "CRON set: $cron"
 fi
 
-echo '[---------- RUN AT STARTUP ----------]'
-if [ "$startup" = true ] ; then
+#[---------- RUN AT STARTUP ----------]
+if [ "$startup" = true ]
+then
   echo 'Running at startup now'
   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
 else
@@ -109,9 +113,9 @@ then
   echo
 fi
 
-echo '[---------- CRON JOB SETUP ----------]'
+#[---------- CRON JOB SETUP ----------]
 echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
-echo 'CRON Job has been set...'
-echo 'Starting CRON Service now...'
+echo '- CRON job has been set...'
+echo '- Starting CRON service now...'
 crond -l 2 -f
 echo
