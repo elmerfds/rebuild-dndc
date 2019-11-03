@@ -2,11 +2,11 @@
 chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
-echo '[---------- VARIABLES CHECK----------]'
+echo '[---------- VARIABLES CHECK ----------]'
 echo
 echo '[---------- DISCORD WEBHOOK ----------]'
 if [ -z "$discord_url" ]
-  then
+then
   echo 'NO DISCORD WEBHOOK SUPPLIED'
   WEBHOOK=""
 else
@@ -14,19 +14,18 @@ else
   WEBHOOK="-d $discord_url"
 fi
 
-echo '[---------- DISCORD NOTIFICATIONS----------]'
-if [ -z "$discord_notifications" ]
-  then
+echo '[---------- DISCORD NOTIFICATIONS ----------]'
+if [ "$discord_notifications" == yes ]
+then
+  echo 'DISCORD NOTIFICATIONS ENABLED'
+else
   echo 'DISCORD NOTIFICATIONS DISABLED'
   discord_notifications="no"
-else
-  echo 'DISCORD NOTIFICATIONS ENABLED'
-  discord_notifications="yes"
 fi
 
 echo '[----------  MASTER container name ----------]'
 if [ -z "$mastercontname" ]
-  then
+then
   echo 'NO MASTER CONTAINER NAME SUPPLIED - USING DEFAULT i.e. vpn'
   mastercontname='vpn'
 else
@@ -35,7 +34,7 @@ fi
 
 echo '[---------- PING COUNT ----------]'
 if [ -z "$ping_count" ]
-  then
+then
   echo 'PING COUNT NOT SET - USING DEFAULT i.e. 4'
   ping_count='4'
 else
@@ -44,7 +43,7 @@ fi
 
 echo '[---------- PING IP ----------]'
 if [ -z "$ping_ip" ]
-  then
+then
   echo 'PING IP NOT SET - USING DEFAULT i.e. 1.1.1.1'
   ping_ip='1.1.1.1'
 else
@@ -53,7 +52,7 @@ fi
 
 echo '[---------- PING IP ALT----------]'
 if [ -z "$ping_ip_alt" ]
-  then
+then
   echo 'PING IP NOT SET - USING DEFAULT i.e. 8.8.8.8'
   ping_ip_alt='8.8.8.8'
 else
@@ -61,26 +60,26 @@ else
 fi
 
 echo '[---------- MASTER CONTAINER CONNECTIVITY ----------]'
-if [ -z "$mastercontconcheck" ]
-  then
-  echo 'MASTER CONTAINER CONNECTIVITY CHECK NOT SET - USING DEFAULT i.e. yes'
-  mastercontconcheck='yes'
+if [ "$mastercontconcheck" == yes ] ; 
+then
+    echo 'MASTER CONTAINER CONNECTIVITY CHECK ENABLED'
 else
-  echo "mastercontconcheck specified: $mastercontconcheck"
+  echo 'MASTER CONTAINER CONNECTIVITY CHECK NOT DISABLED - default: enabled'
+  mastercontconcheck='yes'
 fi
 
 echo '[---------- SLEEP SECONDS ----------]'
 if [ -z "$sleep_secs" ]
-  then
-  echo 'SLEEP SECONDS NOT SPECIFIED AFTER $mastercontname CONTAINER RESTART - USING DEFAULT i.e. 10'
-  sleep_secs='10'
+then
+    echo 'SLEEP SECONDS NOT SPECIFIED AFTER $mastercontname CONTAINER RESTART - USING DEFAULT i.e. 10'
+    sleep_secs='10'
 else
-  echo "sleep_secs specified: $sleep_secs"
+    echo "sleep_secs specified: $sleep_secs"
 fi
 
 echo '[---------- CRON SCHEDULE ----------]'
 if [ -z "$cron" ]
-  then
+then
   echo 'NO CRON SUPPLIED - USING DEFAULT CRON OF: 5 2,11 * * *'
   CRON='5 2,11 * * *'
 else
