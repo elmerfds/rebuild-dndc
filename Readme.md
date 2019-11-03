@@ -77,7 +77,7 @@ If for some reason master container dependent containers have failed to be **cre
 - Create a script called 'Rebuild-DNDC' on 'User Scripts'
 - Edit script and set the variable `mastercontname=your_vpn/master__container_name` , by default it is set to `mastercontname=vpn`
 - Read & enable the variables under the `#USER CONFIGURABLE VARS` section of the script.
-- Make sure you have your master container up & running
+- Make sure you have your master container is up & running
 - Make sure all containers that will be using the master container network stack are up & running.
 - Run the script & monitor the output.
 - If everything is working as expected, set it to run at whatever interval you prefer, e.g. 5mins i.e.  `*/5 * * * *`
