@@ -74,10 +74,10 @@ fi
 #[---------- SLEEP SECONDS ----------]
 if [ -z "$sleep_secs" ]
 then
-    echo "- Sleep secs NOT SET after $mastercontname container restart, default - 10"
+    echo "- Sleep secs not set after $mastercontname container restart, default - 10"
     sleep_secs='10'
 else
-    echo "- Sleep secs SET: $sleep_secs"
+    echo "- Sleep secs set: $sleep_secs"
 fi
 
 #[---------- CRON SCHEDULE ----------]
@@ -111,7 +111,6 @@ then
   --color "0x66ff33" \
   --author-icon "$rdndc_logo" \
   --footer-icon "$rdndc_logo"  &> /dev/null
-  echo
 fi
 
 #[---------- CRON JOB SETUP ----------]
