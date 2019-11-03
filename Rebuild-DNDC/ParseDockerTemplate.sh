@@ -1,4 +1,4 @@
-#RunDokerTemplate.sh
+#ParseDockerTemplate.sh
 #Author - unRAID forum member: skidelo
 #Contributors - Alex R. Berg, eafx
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/

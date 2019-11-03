@@ -1,0 +1,2 @@
+#!/bin/bash
+bash /app/Rebuild-DNDC/Rebuild-DNDC-Manual.sh "$@"
