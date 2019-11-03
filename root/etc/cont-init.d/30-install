@@ -92,30 +92,38 @@ fi
 #[---------- VARIABLES IN USE DISCORD NOTIFICATION ----------]
 if [ "$discord_notifications" == "yes" ]
 then
-  echo "- Push variables in use notification to Discord"
   ./discord-notify.sh \
   --webhook-url=$discord_url \
   --username "$discord_username" \
   --avatar "$rdndc_logo" \
   --title "VARIABLES IN USE" \
-  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
+  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $run_startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
   --color "0x66ff33" \
   --author-icon "$rdndc_logo" \
   --footer-icon "$rdndc_logo"  &> /dev/null
+  echo "- Pushed first notification to Discord"  
 fi
 
 #[---------- RUN AT STARTUP ----------]
-if [ "$startup" = true ]
+if [ "$run_startup" == "yes" ]
 then
-  echo '- Running at startup now'
+  echo '- Run at startup: yes'
   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
 else
-  echo '- Skipping run at startup'
+  echo '- Run at startup: no'
 fi
 
 #[---------- CRON JOB SETUP ----------]
 echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
 echo '- CRON job has been set'
+#[---------- RUN AT STARTUP ----------]
+echo
+if [ "$run_startup" == true ]
+then
+  echo '- Running at startup now...'
+  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
+fi
+echo
 echo '- Starting CRON service now...'
 crond -l 2 -f
 echo
