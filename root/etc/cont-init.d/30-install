@@ -2,6 +2,8 @@
 chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
+echo "Rebuild-DNDC Config"
+echo
 echo '[---------- VARIABLES CHECK ----------]'
 echo
 #[---------- DISCORD WEBHOOK ----------]
@@ -89,6 +91,14 @@ else
   echo "- CRON schedule set: $cron"
 fi
 
+#[---------- RUN AT STARTUP ----------]
+if [ "$run_startup" == "yes" ]
+then
+  echo '- Run at startup: yes'
+else
+  echo '- Run at startup: no'
+fi
+
 #[---------- VARIABLES IN USE DISCORD NOTIFICATION ----------]
 if [ "$discord_notifications" == "yes" ]
 then
@@ -104,24 +114,14 @@ then
   echo "- Pushed first notification to Discord"  
 fi
 
-#[---------- RUN AT STARTUP ----------]
-if [ "$run_startup" == "yes" ]
-then
-  echo '- Run at startup: yes'
-  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
-else
-  echo '- Run at startup: no'
-fi
-
 #[---------- CRON JOB SETUP ----------]
 echo "$cron   cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh " > /etc/crontabs/root
 echo '- CRON job has been set'
 #[---------- RUN AT STARTUP ----------]
-echo
-if [ "$run_startup" == true ]
+if [ "$run_startup" == "yes" ]
 then
   echo '- Running at startup now...'
-  cd /app/Rebuild-DNDC && bash Rebuild-DNDC.sh
+  cd $app_dir && bash Rebuild-DNDC.sh
 fi
 echo
 echo '- Starting CRON service now...'
