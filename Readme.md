@@ -1,5 +1,5 @@
 # Rebuild-DNDC
-Re-create containers that use another container's network stack (i.e. routing container traffic through a VPN container).
+Re-create containers that use another container's network stack (e.g. routing container traffic through a VPN container).
 
 * RDNDC will monitor the master container during updates, reboots or after host reboots and rebuild dependent containers.
 * Only supported on unRAID at the moment.
