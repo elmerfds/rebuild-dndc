@@ -234,7 +234,7 @@ then
         else
             echo "- CONNECTIVITY: BROKEN"
             echo "---- restarting $mastercontname" container
-            #docker restart $mastercontname &> /dev/null
+            docker restart $mastercontname &> /dev/null
             echo "---- $mastercontname restarted"
             echo "---- going to sleep for $sleep_secs seconds"
             sleep $sleep_secs    
