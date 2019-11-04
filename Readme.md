@@ -14,7 +14,7 @@ Re-create containers that use another container's network stack (e.g. routing co
 
 ![image](https://user-images.githubusercontent.com/22656503/68093132-3b93e180-fe8a-11e9-8ab8-06934fad3358.png)
 
-Note: Step 4 replaces the use of `--net=container:master_container_name` in extra parameters & is required to work on unRAID 6.8.0-rcx & subsequent releases.
+Note: Step 2 & 4 replaces the use of `--net=container:master_container_name` in extra parameters & are required to work on unRAID 6.8.0-rcx & subsequent releases.
 
 * [Docker](https://github.com/elmerfdz/unRAIDscripts#docker)  (Recommended)
 * [Host](https://github.com/elmerfdz/unRAIDscripts#host)
