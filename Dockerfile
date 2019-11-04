@@ -11,7 +11,7 @@ ENV app_dir="/app/Rebuild-DNDC" \
     rundockertemplate_script="/app/Rebuild-DNDC/ParseDockerTemplate.sh" \
     docker_tmpl_loc="/config/docker-templates" \
     mastercontepfile_loc="/config/rebuild-dndc" \
-    rdndc_logo="https://i.imgur.com/U6C54bW.png" \
+    rdndc_logo="https://raw.githubusercontent.com/elmerfdz/unRAIDscripts/master/Rebuild-DNDC/img/rdndc-logo.png" \
     discord_username="Rebuild-DNDC" \
     discord_avatar="$rdndc_logo"
 
