@@ -13,7 +13,8 @@ ENV app_dir="/app/Rebuild-DNDC" \
     mastercontepfile_loc="/config/rebuild-dndc" \
     rdndc_logo="https://raw.githubusercontent.com/elmerfdz/unRAIDscripts/master/Rebuild-DNDC/img/rdndc-logo.png" \
     discord_username="Rebuild-DNDC" \
-    discord_avatar="$rdndc_logo"
+    discord_avatar="$rdndc_logo" \
+    TZ=
 
 # Add local files
 COPY Rebuild-DNDC/ /app/Rebuild-DNDC

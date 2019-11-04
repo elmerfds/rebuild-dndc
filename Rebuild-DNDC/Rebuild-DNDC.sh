@@ -22,7 +22,7 @@ ver=3.8.0-a
 #NON-CONFIGURABLE VARS
 contname=''
 templatename=''
-datetime=$(date +"%T %d-%m-%Y")
+datetime=$(date +"%X %x")
 buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
