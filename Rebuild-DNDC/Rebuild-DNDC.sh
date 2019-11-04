@@ -22,7 +22,7 @@ ver=3.8.0-a
 #NON-CONFIGURABLE VARS
 contname=''
 templatename=''
-datetime=$(date +"%X %x")
+datetime=$(date)
 buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
@@ -40,7 +40,7 @@ recreatecont_notify_complete()
     fi
     if [ "$discord_notifications" == "yes" ]
     then        
-        ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - Completed!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0x66ff33" --author-icon "$discord_avatar" --footer "v$ver" --footer-icon "$discord_avatar"  &> /dev/null
+        ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - Completed!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
     fi
 }
 
@@ -55,7 +55,7 @@ recreatecont_notify()
         fi
         if [ "$discord_notifications" == "yes" ]
         then          
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - In Progress!" --description "- $mastercontname container Endpoint doesn't match!" --color "0xb30000" --author-icon "$discord_avatar" --footer "v$ver" --footer-icon "$discord_avatar"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress!" --description "- $mastercontname container Endpoint doesn't match!" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
     elif [ "$contnetmode" != "$mastercontid" ]
     then
@@ -66,7 +66,7 @@ recreatecont_notify()
         fi
         if [ "$discord_notifications" == "yes" ]
         then            
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "REBUILD - In Progress!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$discord_avatar" --footer "v$ver" --footer-icon "$discord_avatar"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
     fi 
 }
@@ -85,7 +85,7 @@ first_run()
         fi
         if [ "$discord_notifications" == "yes" ]
         then        
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$discord_avatar" --title "FIRST-RUN" --description "- Setup Complete" --color "0x66ff33" --author-icon "$discord_avatar" --footer "v$ver" --footer-icon "$discord_avatar"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "FIRST-RUN" --description "- Setup Complete" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
         was_run=1
     elif [ -d "$mastercontepfile_loc" ] && [ -e "$mastercontepfile_loc/mastercontepid.tmp" ] 
