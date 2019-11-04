@@ -2,7 +2,7 @@
 chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
-echo "Rebuild-DNDC Config"
+echo "-- Rebuild-DNDC Config"
 echo
 echo '[---------- VARIABLES CHECK ----------]'
 echo

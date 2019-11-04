@@ -48,14 +48,14 @@ recreatecont_notify()
 {
     if [ "$getmastercontendpointid" != "$currentendpointid" ]
     then
-        echo "Rebuild-DNDC - REBUILDING: $mastercontname container Endpoint doesn't match"
+        echo "Rebuild-DNDC - REBUILDING: $mastercontname container EndpointID doesn't match"
         if [ "$unraid_notifications" == "yes" ]
         then              
-            /usr/local/emhttp/webGui/scripts/notify -i "warning" -s "Rebuild-DNDC"  -d "- REBUILDING: $mastercontname container Endpoint doesn't match" 
+            /usr/local/emhttp/webGui/scripts/notify -i "warning" -s "Rebuild-DNDC"  -d "- REBUILDING: $mastercontname container EndpointID doesn't match" 
         fi
         if [ "$discord_notifications" == "yes" ]
         then          
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress!" --description "- $mastercontname container Endpoint doesn't match!" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress!" --description "- $mastercontname container EndpointID doesn't match!" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
     elif [ "$contnetmode" != "$mastercontid" ]
     then
@@ -66,7 +66,7 @@ recreatecont_notify()
         fi
         if [ "$discord_notifications" == "yes" ]
         then            
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress..." --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
     fi 
 }
@@ -101,11 +101,11 @@ check_masterendpointid()
 {
     if [ "$getmastercontendpointid" == "$currentendpointid" ]
     then
-        echo "B. SKIPPING: MASTER CONTAINER ENDPOINT IS CURRENT"     
+        echo "B. SKIPPING: MASTER CONTAINER ENDPOINTID IS CURRENT"     
         inscope_container_vars
     elif [ "$getmastercontendpointid" != "$currentendpointid" ]
     then
-        echo "B. ALERT: MASTER container Endpoint doesn't match"
+        echo "B. ALERT: MASTER container ENDPOINTID DOESN'T MATCH"
         recreatecont_notify
         echo
         inscope_container_vars        
@@ -271,7 +271,7 @@ then
     recreatecont_notify_complete
 fi
 echo 
-echo "-------------------------------------------"
-echo " Run Completed @ $datetime  "
-echo "-------------------------------------------"
+echo "------------------------------------------"
+echo " Run Completed: $datetime  "
+echo "------------------------------------------"
 echo
