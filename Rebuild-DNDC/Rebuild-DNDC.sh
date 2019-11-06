@@ -29,6 +29,9 @@ getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSe
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
+#App portwarding
+#rtorrent_pf=''
+
 
 #NOTIFICATIONS
 recreatecont_notify_complete()
@@ -217,6 +220,17 @@ rebuild_mod()
     fi
 }
 
+app_pf()
+{
+    vpn_pf=$(docker exec -it $mastercontname /bin/sh -c "cat /forwarded_port")
+    if [ "$rtorrent_pf" == "yes" ] 
+    then
+        sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rtorrentrc_loc
+        sleep $sleep_secs
+        docker restart $rtorrent_cont_name
+    fi
+}
+
 mastercontconnectivity_mod()
 {
 #Check if MASTER container network has connectivity
@@ -269,6 +283,8 @@ echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
+    #Check port forwarding requirement
+    app_pf
 fi
 echo 
 echo "------------------------------------------"
