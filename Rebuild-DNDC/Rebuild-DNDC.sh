@@ -225,9 +225,11 @@ app_pf()
     vpn_pf=$(docker exec -it $mastercontname /bin/sh -c "cat /forwarded_port")
     if [ "$rtorrent_pf" == "yes" ] 
     then
-        sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rtorrentrc_loc
+        sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rtorrent.rc
+        echo "- Replaced $rtorrent_cont_name container port-range with $vpn_pf"
         sleep $sleep_secs
         docker restart $rtorrent_cont_name
+        echo "Restarted $rtorrent_cont_name"
     fi
 }
 
