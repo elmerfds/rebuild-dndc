@@ -23,14 +23,13 @@ ver=3.8.0-a
 contname=''
 templatename=''
 datetime=$(date)
-buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
+#buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
+buildcont_cmd="docker-compose -f $docker_tmpl_loc/$compose_name.yml  up -d"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
-#App portwarding
-#rtorrent_pf=''
 
 
 #NOTIFICATIONS
@@ -125,14 +124,14 @@ inscope_container_vars()
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
         if [ "$pull_contnet_ids" == "$mastercontid" ]
         then
-            list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
+            #list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
             list_inscope_cont_ids+=(${get_container_ids[$a]})
             list_inscope_contnames+=(${get_container_names[$a]})     
             no=${#list_inscope_contnames[@]}
             echo "$no ${get_container_names[$a]}"
             echo "- ContainerID ${get_container_ids[$a]}"       
             echo "- NetworkID: $pull_contnet_ids"              
-            echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+            #echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
             echo   
         fi 
     done
@@ -143,7 +142,7 @@ inscope_container_vars()
         echo
         list_inscope_cont_ids=($(<$mastercontepfile_loc/list_inscope_cont_ids.tmp))
         list_inscope_contnames=($(<$mastercontepfile_loc/list_inscope_cont_names.tmp))
-        list_inscope_cont_tmpl=($(<$mastercontepfile_loc/list_inscope_cont_tmpl.tmp))
+        #list_inscope_cont_tmpl=($(<$mastercontepfile_loc/list_inscope_cont_tmpl.tmp))
         if [ "${list_inscope_contnames}" == '' ]
         then
             echo "- No containers in scope."
@@ -158,7 +157,7 @@ inscope_container_vars()
 inscope_container_vars_post(){
     echo "${list_inscope_cont_ids[@]}" > $mastercontepfile_loc/list_inscope_cont_ids.tmp;    
     echo "${list_inscope_contnames[@]}" > $mastercontepfile_loc/list_inscope_cont_names.tmp;    
-    echo "${list_inscope_cont_tmpl[@]}" > $mastercontepfile_loc/list_inscope_cont_tmpl.tmp;
+    #echo "${list_inscope_cont_tmpl[@]}" > $mastercontepfile_loc/list_inscope_cont_tmpl.tmp;
     if [ "${list_inscope_contnames}" != '' ]
     then
         echo "D. PROCESSING: IN-SCOPE CONTAINERS"
@@ -168,7 +167,7 @@ inscope_container_vars_post(){
         do  
         contname=${list_inscope_contnames[$c]}
         CONT_ID=${list_inscope_cont_ids[$c]}              
-        CONT_TMPL=${list_inscope_cont_tmpl[$c]}            
+        #CONT_TMPL=${list_inscope_cont_tmpl[$c]}            
         check_networkmodeid
     done
 }
@@ -193,9 +192,9 @@ check_networkmodeid()
 
 rebuild_mod()
 {
-    buildcont_cmd="$rundockertemplate_script -v $CONT_TMPL"    
+    buildcont_cmd="docker-compose -f $docker_tmpl_loc/$compose_name.yml  up -d"  
     build_stage_var=('Stopping' 'Removing' 'Recreating')
-    build_stage_cmd_var=("docker stop $contname" "docker rm $contname" "$buildcont_cmd")
+    build_stage_cmd_var=("docker stop $contname" "docker rm $contname")
 
     if [ "$getmastercontendpointid" != "$currentendpointid" ] || [ "$mastercontid" != "$contnetmode" ]
     then
@@ -211,6 +210,10 @@ rebuild_mod()
             echo
             $build_stage_cmd
             done
+            echo "----------------------------"
+            echo "  Pulling Compose Config   "
+            echo "----------------------------"            
+            $buildcont_cmd
         was_rebuild=1  
     fi
     
@@ -226,10 +229,10 @@ app_pf()
     if [ "$rtorrent_pf" == "yes" ] 
     then
         sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
-        echo "- PORT-FORWARDING: Replaced $rtorrent_cont_name container port-range with $vpn_pf"
+        echo "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
         sleep $sleep_secs
-        docker restart $rtorrent_cont_name  &> /dev/null
-        echo "- RESTARTED $rtorrent_cont_name"
+        docker restart $rutorrent_cont_name  &> /dev/null
+        echo "- RESTARTED $rutorrent_cont_name"
     fi
 }
 
