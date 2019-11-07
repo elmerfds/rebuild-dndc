@@ -228,7 +228,7 @@ app_pf()
         sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
         echo "- PORT-FORWARDING: Replaced $rtorrent_cont_name container port-range with $vpn_pf"
         sleep $sleep_secs
-        docker restart $rtorrent_cont_name
+        docker restart $rtorrent_cont_name  &> /dev/null
         echo "- RESTARTED $rtorrent_cont_name"
     fi
 }
