@@ -190,7 +190,7 @@ check_networkmodeid()
 
 rebuild_mod()
 {
-    buildcont_cmd="cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR"  
+    buildcont_cmd=$(cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR)  
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $contname" "docker rm $contname")
 
