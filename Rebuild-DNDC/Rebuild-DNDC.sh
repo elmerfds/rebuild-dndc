@@ -25,7 +25,6 @@ templatename=''
 datetime=$(date)
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
-buildcont_cmd=$(cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR)  
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
@@ -191,7 +190,7 @@ check_networkmodeid()
 
 rebuild_mod()
 {
-    buildcont_cmd=$(cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR)  
+    buildcont_cmd="docker-compose -f $docker_compose_loc/$compose_name.yml  up -d"
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $contname" "docker rm $contname")
 
