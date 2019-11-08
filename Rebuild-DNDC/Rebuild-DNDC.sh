@@ -15,7 +15,7 @@ ver=3.8.0-a
 #unraid_notifications='no'                              #Enable Unraid GUI notifications, yes/no
 #mastercontepfile_loc='/tmp/user.scripts/rebuild-dndc'  #location to store temporary files - default /tmp/user.scripts/rebuild-dndc
 #rundockertemplate_script='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
-#docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user' #Docker template location on Unraid - default /boot/config/plugins/dockerMan/templates-use
+#docker_compose_loc='/boot/config/plugins/dockerMan/templates-user' #Docker template location on Unraid - default /boot/config/plugins/dockerMan/templates-use
 
 ############################################################################################ READ & UNCOMENT (#)  THE ABOVE VARS ############################################################################################
 
@@ -23,8 +23,8 @@ ver=3.8.0-a
 contname=''
 templatename=''
 datetime=$(date)
-#buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
-buildcont_cmd="docker-compose -f $docker_tmpl_loc/$compose_name.yml  up -d"
+#buildcont_cmd="$rundockertemplate_script -v $docker_compose_loc/my-$templatename.xml"
+buildcont_cmd="docker-compose -f $docker_compose_loc/$compose_name.yml  up -d"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
@@ -124,7 +124,7 @@ inscope_container_vars()
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
         if [ "$pull_contnet_ids" == "$mastercontid" ]
         then
-            #list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
+            #list_inscope_cont_tmpl+=($(find $docker_compose_loc -type f -iname "*-${get_container_names[$a]}.xml"))
             list_inscope_cont_ids+=(${get_container_ids[$a]})
             list_inscope_contnames+=(${get_container_names[$a]})     
             no=${#list_inscope_contnames[@]}
@@ -192,7 +192,7 @@ check_networkmodeid()
 
 rebuild_mod()
 {
-    buildcont_cmd="docker-compose -f $docker_tmpl_loc/$compose_name.yml  up -d"  
+    buildcont_cmd="docker-compose -f $docker_compose_loc/$compose_name.yml  up -d"  
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $contname" "docker rm $contname")
 
