@@ -23,8 +23,6 @@ ver=3.9.0-b
 contname=''
 templatename=''
 datetime=$(date)
-#buildcont_cmd="$rundockertemplate_script -v $docker_compose_loc/my-$templatename.xml"
-buildcont_cmd="docker-compose -f $docker_compose_loc/$compose_name.yml  up -d"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
@@ -192,7 +190,7 @@ check_networkmodeid()
 
 rebuild_mod()
 {
-    buildcont_cmd="docker-compose -f $docker_compose_loc/$compose_name.yml  up -d"  
+    buildcont_cmd="cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR"  
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $contname" "docker rm $contname")
 
