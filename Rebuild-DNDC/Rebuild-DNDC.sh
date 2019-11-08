@@ -226,6 +226,8 @@ rebuild_mod()
 app_pf()
 {
     echo
+    echo "E. PORT-FORWARD: Supported Apps"
+    echo
     if [ "$rtorrent_pf" == "yes" ] 
     then
         echo "----------------------------"
