@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.0-a
+ver=3.9.0-b
 
 #USER CONFIGURABLE VARS - Uncomment VARS -- Non-Docker use only!
 ########################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ###########################################################################################
@@ -231,26 +231,25 @@ app_pf()
     if [ "$rtorrent_pf" == "yes" ] 
     then
         echo "----------------------------"
-        echo "  ruTorrent Port Forward    "
+        echo "  ruTorrent PF              "
         echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
         rtorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$pf_loc/rutorrent/rtorrent.rc" ; echo $?)
         if [ "$rtorrent_pf_status" == "1" ] 
         then
             sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
-            echo "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
+            echo "- PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
             echo "- BREAK: Quick 5sec nap before restarting $rutorrent_cont_name"
             sleep 5
             docker restart $rutorrent_cont_name  &> /dev/null
             echo "- RESTARTED: $rutorrent_cont_name"
             if [ "$discord_notifications" == "yes" ]
             then        
-                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- RESTARTED: $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             fi
         elif [ "$rtorrent_pf_status" == "0" ]
         then
-            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "
-            echo      
+            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "                 
         fi
     fi
 }
