@@ -241,9 +241,14 @@ app_pf()
             sleep 5
             docker restart $rutorrent_cont_name  &> /dev/null
             echo "- RESTARTED: $rutorrent_cont_name"
+            if [ "$discord_notifications" == "yes" ]
+            then        
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- RESTARTED: $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            fi
         elif [ "$rtorrent_pf_status" == "0" ]
         then
-            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "      
+            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "
+            echo      
         fi
     fi
 }
@@ -296,8 +301,11 @@ first_run
 #Check MASTER container Endpoint node, immediately rebuild if doesn't match
 check_masterendpointid
 
-#Check port forwarding requirement
-app_pf
+#Check app port forwarding requirement
+if [ "$rtorrent_pf" == "yes" ]
+then
+    app_pf
+fi
 
 echo
 if [ "$was_rebuild" == 1 ]
