@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.0-a
+ver=3.9.0-a
 
 #USER CONFIGURABLE VARS - Uncomment VARS -- Non-Docker use only!
 ########################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ###########################################################################################
