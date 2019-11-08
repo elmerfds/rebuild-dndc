@@ -225,14 +225,22 @@ rebuild_mod()
 
 app_pf()
 {
-    vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
     if [ "$rtorrent_pf" == "yes" ] 
     then
-        sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
-        echo "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
-        sleep $sleep_secs
-        docker restart $rutorrent_cont_name  &> /dev/null
-        echo "- RESTARTED $rutorrent_cont_name"
+        vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        rtorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$pf_loc/rutorrent/rtorrent.rc" ; echo $?)
+        if [ "$rtorrent_pf_status" == "1" ] 
+        then
+            sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
+            echo "- PORT-FORWARDING: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
+            echo "- BREAK: Quick 5sec nap before restarting $rutorrent_cont_name"
+            sleep 5
+            docker restart $rutorrent_cont_name  &> /dev/null
+            echo "- RESTARTED: $rutorrent_cont_name"
+        elif [ "$rtorrent_pf_status" == "0" ]
+        then
+            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "      
+        fi
     fi
 }
 
@@ -284,12 +292,13 @@ first_run
 #Check MASTER container Endpoint node, immediately rebuild if doesn't match
 check_masterendpointid
 
+#Check port forwarding requirement
+app_pf
+
 echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
-    #Check port forwarding requirement
-    app_pf
 fi
 echo 
 echo "------------------------------------------"
