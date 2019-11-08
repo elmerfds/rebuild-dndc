@@ -25,6 +25,7 @@ templatename=''
 datetime=$(date)
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
+buildcont_cmd=$(cd $docker_compose_loc && docker-compose -f $compose_name.yml  up -d && cd $WORKDIR)  
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
