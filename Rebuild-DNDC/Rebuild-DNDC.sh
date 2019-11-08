@@ -50,7 +50,7 @@ recreatecont_notify()
 {
     if [ "$getmastercontendpointid" != "$currentendpointid" ]
     then
-        echo "Rebuild-DNDC - REBUILDING: $mastercontname container EndpointID doesn't match"
+        echo "- REBUILDING: $mastercontname container EndpointID doesn't match"
         if [ "$unraid_notifications" == "yes" ]
         then              
             /usr/local/emhttp/webGui/scripts/notify -i "warning" -s "Rebuild-DNDC"  -d "- REBUILDING: $mastercontname container EndpointID doesn't match" 
@@ -61,7 +61,7 @@ recreatecont_notify()
         fi
     elif [ "$contnetmode" != "$mastercontid" ]
     then
-        echo "Rebuild-DNDC - REBUILDING: ${recreatecont_notify_complete_msg[*]} "
+        echo "- REBUILDING: ${recreatecont_notify_complete_msg[*]} "
         if [ "$unraid_notifications" == "yes" ]
         then           
             /usr/local/emhttp/webGui/scripts/notify -i "warning"  -s "Rebuild-DNDC"  -d "- REBUILDING: ${recreatecont_notify_complete_msg[*]} "
@@ -225,8 +225,12 @@ rebuild_mod()
 
 app_pf()
 {
+    echo
     if [ "$rtorrent_pf" == "yes" ] 
     then
+        echo "----------------------------"
+        echo "  ruTorrent Port Forward    "
+        echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
         rtorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$pf_loc/rutorrent/rtorrent.rc" ; echo $?)
         if [ "$rtorrent_pf_status" == "1" ] 
@@ -301,7 +305,7 @@ then
     recreatecont_notify_complete
 fi
 echo 
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo " Run Completed: $datetime  "
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo
