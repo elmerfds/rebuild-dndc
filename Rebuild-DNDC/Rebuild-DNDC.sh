@@ -29,8 +29,6 @@ getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSe
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
-#App portwarding
-#rtorrent_pf=''
 
 
 #NOTIFICATIONS
@@ -225,14 +223,14 @@ app_pf()
     echo
     echo "E. PORT-FORWARD: Supported Apps"
     echo
-    if [ "$rtorrent_pf" == "yes" ] 
+    if [ "$rutorrent_pf" == "yes" ] 
     then
         echo "----------------------------"
         echo "  ruTorrent PF              "
         echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
-        rtorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$pf_loc/rutorrent/rtorrent.rc" ; echo $?)
-        if [ "$rtorrent_pf_status" == "1" ] 
+        rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$pf_loc/rutorrent/rtorrent.rc" ; echo $?)
+        if [ "$rutorrent_pf_status" == "1" ] 
         then
             sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
             echo "- PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
@@ -244,7 +242,7 @@ app_pf()
             then        
                 ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             fi
-        elif [ "$rtorrent_pf_status" == "0" ]
+        elif [ "$rutorrent_pf_status" == "0" ]
         then
             echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "                 
         fi
@@ -300,7 +298,7 @@ first_run
 check_masterendpointid
 
 #Check app port forwarding requirement
-if [ "$rtorrent_pf" == "yes" ]
+if [ "$rutorrent_pf" == "yes" ]
 then
     app_pf
 fi
