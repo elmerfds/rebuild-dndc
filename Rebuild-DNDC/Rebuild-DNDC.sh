@@ -234,8 +234,8 @@ app_pf()
         if [ "$rutorrent_pf_status" == "1" ] 
         then
             sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
-	        sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $pf_loc/rtorrent.rc
-	        sed -i "s/^ip.*/ip = $get_vpn_wan_ip/" $pf_loc/rtorrent.rc            
+	        sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $pf_loc/rutorrent/rtorrent.rc
+	        sed -i "s/^ip.*/ip = $get_vpn_wan_ip/" $pf_loc/rutorrent/rtorrent.rc         
             echo "- PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
             echo "- BREAK: Quick 5sec nap before restarting $rutorrent_cont_name"
             sleep 5
