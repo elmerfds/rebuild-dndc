@@ -213,7 +213,7 @@ do
 	add_ip	
 	add_privileged
 	add_envars
-	add_timezone
+	#add_timezone
 	add_ports
 	add_volumes
 	add_extraparams
