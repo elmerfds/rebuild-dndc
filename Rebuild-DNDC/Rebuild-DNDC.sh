@@ -311,6 +311,7 @@ echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
+    #echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
 fi
 echo 
 echo "------------------------------------------"
