@@ -1,4 +1,5 @@
 #ParseDockerTemplate.sh
+#ver=2.0
 #Author - unRAID forum member: skidelo
 #Contributors - Alex R. Berg, eafx
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/
@@ -6,6 +7,7 @@
 
 #ChangeLog - Fixed env variable parsing - eafx
 #		   - Added IP argument parsing - eafx
+#          - Workaround for pulling Timezone  -eafx
 
 #Variable declarations and initialization
 docker="/usr/bin/docker run -d"
@@ -125,10 +127,12 @@ add_envars(){
 add_timezone(){
 	#bindtime=$(xmllint --xpath "//BindTime/text()" $xmlFile 2> /dev/null)
     #if [[ $bindtime == "true" ]]; then	
-		timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
-		docker_string+=" -e TZ=$timezone"
-		[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
+	#	timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
+	#	docker_string+=" -e TZ=$timezone"
+	#	[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
 	#fi
+		docker_string+=" -e TZ=\"$TZ\""
+		[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=\"$TZ\""
 }
 
 add_ports(){
@@ -213,7 +217,7 @@ do
 	add_ip	
 	add_privileged
 	add_envars
-	#add_timezone
+	add_timezone
 	add_ports
 	add_volumes
 	add_extraparams
