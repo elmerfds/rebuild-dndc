@@ -68,8 +68,8 @@ If for some reason master container dependent containers have failed to be **cre
 
 ***
 
-- ParseDockerTemplate.sh: author unRAID forum member: skidelo; contributors: Alex R. Berg and eafx; source: [link](https://forums.unraid.net/topic/40016-start-docker-template-via-command-line)
+- ParseDockerTemplate.sh: author unRAID forum member: skidelo; contributors: Alex R. Berg and eafx; [source](https://forums.unraid.net/topic/40016-start-docker-template-via-command-line)
 
-- Discord notifications: Discord.sh; source: [link](https://github.com/ChaoticWeg/discord.sh)
+- Discord notifications: Discord.sh; source: [source](https://github.com/ChaoticWeg/discord.sh)
 
 - Logo: based on the icon made by Pause08 from www.flaticon.com
