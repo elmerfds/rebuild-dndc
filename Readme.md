@@ -5,8 +5,8 @@ Re-create containers that use another container's network stack (e.g. routing co
 * Only supported on unRAID at the moment.
 * Any containers using the master container network stack will be auto added to the watch list. 
 
-## Prerequisites (Docker & Host)
-1. Make sure the master container is up & running as expected.
+## Prerequisites
+1. Make sure the master container (e.g. vpn container) is up & running as expected.
 2. Create a docker network named container:master_container_name , to do that, do the following:
    open terminal > `docker network create container:master_container_name`  note: master container name should be all lower case, rename your container if it isn't. 
 3. Now edit a container you want to add to the master container network stack
@@ -16,10 +16,16 @@ Re-create containers that use another container's network stack (e.g. routing co
 
 Note: Step 2 & 4 replaces the use of `--net=container:master_container_name` in extra parameters & are required to work on unRAID 6.8.0-rcx & subsequent releases.
 
-* [Docker](https://github.com/elmerfdz/unRAIDscripts#docker)  (Recommended)
-* [Host](https://github.com/elmerfdz/unRAIDscripts#host)
-
 ## Docker
+
+**Community Applications (unRAID) - recommended** 
+
+1. Open the 'Apps' tab and 
+2. Search for 'rebuild-dndc' 
+3. Click on the Download button
+
+![ca](https://i.imgur.com/kpNEgGw.png)
+
 
 **Docker Run** 
 
@@ -58,37 +64,12 @@ If for some reason master container dependent containers have failed to be **cre
 * Manual run is not limited to containers dependent on master container network. As long as the docker template for that container exists, it will create the container.
 
 
-
-## Host
-#### Prerequisites
-- Install 'User Scripts' plugins from CA
-- Use the same script names
-- ParseDockerTemplate script
-- 6.8.0-rcxx is most probably not required but that's the last build I've tested this version of the script on.
-- Or use the 
-
-#### ParseDockerTemplate (Dependency)
-- Create a script called 'ParseDockerTemplate' on 'User Scripts'
-- Set it to run 'At First Array Start Only' on 'User Scripts'
-- This script on it's own doesn't do anything without specifying any arguments.
-- Run this script once, so that the 'User Script' plugin copies the script files to /tmp/user.scripts/tmpScripts/ (required for 6.8.0-rcx releases), `File '' does not exist!` message
-
-#### Rebuild-DNDC (Required-Main)
-- Create a script called 'Rebuild-DNDC' on 'User Scripts'
-- Edit script and set the variable `mastercontname=your_vpn/master__container_name` , by default it is set to `mastercontname=vpn`
-- Read & enable the variables under the `#USER CONFIGURABLE VARS` section of the script.
-- Make sure you have your master container is up & running
-- Make sure all containers that will be using the master container network stack are up & running.
-- Run the script & monitor the output.
-- If everything is working as expected, set it to run at whatever interval you prefer, e.g. 5mins i.e.  `*/5 * * * *`
-- Try restarting, deleting & rebuilding the master container, the script should be able to detect & rebuild all containers relying on the master container.
-
 ### Credits
 
 ***
 
-- ParseDockerTemplate.sh: author unRAID forum member: skidelo; contributors: Alex R. Berg and eafx; source: [link](https://forums.unraid.net/topic/40016-start-docker-template-via-command-line)
+- ParseDockerTemplate.sh: author unRAID forum member: skidelo; contributors: Alex R. Berg and eafx; [source](https://forums.unraid.net/topic/40016-start-docker-template-via-command-line)
 
-- Discord notifications: Discord.sh; source: [link](https://github.com/ChaoticWeg/discord.sh)
+- Discord notifications: Discord.sh; source: [source](https://github.com/ChaoticWeg/discord.sh)
 
-- Temporary logo: based on the icon made by Pause08 from www.flaticon.com
+- Logo: based on the icon made by Pause08 from www.flaticon.com
