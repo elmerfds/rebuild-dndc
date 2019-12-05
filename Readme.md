@@ -58,10 +58,17 @@ Container images are configured using parameters passed at runtime (such as thos
 ### - Create dependent containers manually
 If for some reason master container dependent containers have failed to be **created**, you can start several containers using a single command, which is far more convenient than doing it through the unRAID GUI.
 
-`docker exec Rebuild-DNDC /bin/sh -c "rebuildm container01 container02 container03"`
+`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -b container01 container02 container03"`
+
+OR
+
+`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -f container01 container02 container03"`
+
 
 * Replace containerXX with the actual containers you want to create (case-sensitive).
 * Manual run is not limited to containers dependent on master container network. As long as the docker template for that container exists, it will create the container.
+* -b : Attempts a container rebuild only, if that container already exists, rebuild will be skipped.
+* -f : Stop/remove and rebuild containers if it exists or not.
 
 
 ### Credits
