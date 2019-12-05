@@ -5,7 +5,6 @@ ver=2.0.1
 #VARS
 inscope_containers=("$@")
 force=0
-dryrun=0
 
 rebuild_man()
 {
