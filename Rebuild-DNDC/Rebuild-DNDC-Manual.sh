@@ -1,6 +1,6 @@
 #!/bin/bash
 #author: https://github.com/elmerfdz
-ver=2.0.0
+ver=2.0.1
 
 #VARS
 inscope_containers=("$@")
@@ -9,12 +9,6 @@ dryrun=0
 
 rebuild_man()
 {
-echo
-echo "-------------------------------"
-echo " Rebuild-DNDC-Manual v$ver     "
-echo "-------------------------------"
-echo
-
 if [ "$force" == "0" ]
 then
     inscope_containers_purify=()
@@ -62,19 +56,33 @@ then
             echo "----------------------------"
             echo
             $build_stage_cmd
-            #echo "build_stage_cmd: $build_stage_cmd"
-        echo
+            echo
             done
     done
 fi
 }
+echo
+echo "-------------------------------"
+echo " Rebuild-DNDC-Manual v$ver     "
+echo "-------------------------------"
+echo
+if [[ ! ${inscope_containers[0]} =~ ^(-b|-f)$ ]]
+then
+    echo "Usage:"
+    echo
+    echo "-b : Attempts a container rebuild only, if that container already exists, rebuild will be skipped"
+    echo "-f : Stop/remove and rebuild containers if it exists or not"
+    echo
+    echo "Examples:"
+    echo
+    echo "rebuildm -b container01 container02 container03"
+    echo "rebuildm -f container01 container02 container03"
+    echo
+    exit 0
+fi
 
 while getopts f:b: opt; do
     case $opt in
-	h)
-	    usage
-	    exit
-	    ;;
 	f)
 	    force=1
         rebuild_man
