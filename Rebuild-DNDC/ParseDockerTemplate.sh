@@ -1,10 +1,13 @@
 #ParseDockerTemplate.sh
+#ver=2.0
 #Author - unRAID forum member: skidelo
 #Contributors - Alex R. Berg, eafx
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/
 #This script relies on 'xmllint' which is installed by default in unRAID v6.0.1
 
 #ChangeLog - Fixed env variable parsing - eafx
+#		   - Added IP argument parsing - eafx
+#          - Workaround for pulling Timezone  -eafx
 
 #Variable declarations and initialization
 docker="/usr/bin/docker run -d"
@@ -76,6 +79,15 @@ add_name(){
 	echo "Name: $name"
 }
 
+add_ip(){
+	MyIP=$(xmllint --xpath "/Container/MyIP/text()" $xmlFile 2> /dev/null)
+	ip=$MyIP
+	if [[ $ip != "" ]]; then
+		docker_string+=" --ip=\"$ip\""
+		[ "$verbose" = "1" ] && echo "Found IP:  --ip=\"$ip\""
+	fi
+}
+
 add_net(){
 	call_add_ports=0
 	net=$(xmllint --xpath "/Container/Networking/Mode/text()" $xmlFile 2> /dev/null)
@@ -101,10 +113,10 @@ add_envars(){
 		xmllint --noout --xpath /Container/Environment/Variable[$numEnVars]/Name $xmlFile > /dev/null 2>&1
 		status=$?
 		if [[ $status == 0 ]]; then
-			name=$(xmllint --xpath "/Container/Environment/Variable[$numEnVars]/Name/text()" $xmlFile)
+			name=$(xmllint --xpath "/Container/Environment/Variable[$numEnVars]/Name/text()" $xmlFile) 
 			value=$(xmllint --xpath "/Container/Environment/Variable[$numEnVars]/Value/text()" $xmlFile)
 			docker_string+=" -e $name=\"$value\""
-			[ "$verbose" = "1" ] && echo "Found Environment:  -e $name=\"$value\""
+			[ "$verbose" = "1" ] && echo "Found Environment:  -e $name=\"$value\"" 
 			((numEnVars++))
 		else
 			break
@@ -113,12 +125,14 @@ add_envars(){
 }
 
 add_timezone(){
-	bindtime=$(xmllint --xpath "//BindTime/text()" $xmlFile 2> /dev/null)
-    if [[ $bindtime == "true" ]]; then	
-		timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
-		docker_string+=" -e TZ=$timezone"
-		[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
-	fi
+	#bindtime=$(xmllint --xpath "//BindTime/text()" $xmlFile 2> /dev/null)
+    #if [[ $bindtime == "true" ]]; then	
+	#	timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
+	#	docker_string+=" -e TZ=$timezone"
+	#	[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
+	#fi
+		docker_string+=" -e TZ=\"$TZ\""
+		[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=\"$TZ\""
 }
 
 add_ports(){
@@ -200,6 +214,7 @@ do
 
 	add_name
 	add_net
+	add_ip	
 	add_privileged
 	add_envars
 	add_timezone
