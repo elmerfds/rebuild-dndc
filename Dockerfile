@@ -8,7 +8,7 @@ RUN apt update && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \ 
     apt update && \
     apt-cache policy docker-ce && \
-    apt install docker-ce  && \
+    apt install -y docker-ce  && \
     mkdir -p /app/pf
 
 # Setting environment variables
