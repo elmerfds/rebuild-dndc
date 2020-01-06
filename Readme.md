@@ -8,7 +8,7 @@ Re-create containers that use another container's network stack (e.g. routing co
 ## Prerequisites
 1. Make sure the master container (e.g. vpn container) is up & running as expected.
 2. Create a docker network named container:master_container_name , to do that, do the following:
-   open terminal > `docker network create container:master_container_name`  note: container name is case-sensitive
+   open terminal > `docker network create container:master_container_name`  note: master container name should be all lower case, rename your container if it isn't. 
 3. Now edit a container you want to add to the master container network stack
 4. You should see the created network (step 2) under 'network type', select that & click 'apply'. 
 
