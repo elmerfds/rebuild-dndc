@@ -3,22 +3,6 @@
 #author: https://github.com/elmerfdz
 ver=3.8.3-u
 
-#USER CONFIGURABLE VARS - Uncomment VARS -- Non-Docker use only!
-########################################################################################### READ & UNCOMENT (#) THE FOLLOWING VARS ###########################################################################################
-
-#mastercontname=vpn                                     #VPN Container name, replace this with your VPN container name - default container name 'vpn'
-#ping_count=4                                           #Number of times you want to ping the ping_ip before the script restarts the MASTER container due to no connectivity, lower number might be too aggressive - default 4
-#ping_ip='1.1.1.1'                                      #IP to ping to test connectivity - default CLOUDFLARE DNS
-#ping_ip_alt='8.8.8.8'                                  #Secondary IP to ping to test connectivity - default GOOGLE DNS.
-#mastercontconcheck='yes'                               #yes/no to check for MASTER connectivity testing & reboot container - default 'yes'
-#sleep_secs=10                                          #Check for the approximate time it takes for your MASTER container to reboot completely in seconds - default 10s
-#unraid_notifications='no'                              #Enable Unraid GUI notifications, yes/no
-#mastercontepfile_loc='/tmp/user.scripts/rebuild-dndc'  #location to store temporary files - default /tmp/user.scripts/rebuild-dndc
-#rundockertemplate_script='/tmp/user.scripts/tmpScripts/ParseDockerTemplate/script' #location of ParseDockerTemplate script - default /tmp/user.scripts/tmpScripts/
-#docker_tmpl_loc='/boot/config/plugins/dockerMan/templates-user' #Docker template location on Unraid - default /boot/config/plugins/dockerMan/templates-use
-
-############################################################################################ READ & UNCOMENT (#)  THE ABOVE VARS ############################################################################################
-
 #NON-CONFIGURABLE VARS
 contname=''
 templatename=''
@@ -145,7 +129,7 @@ inscope_container_vars()
         if [ "${list_inscope_contnames}" == '' ]
         then
             echo "- No containers in scope."
-            echo "- Make sure you have the containers routed through the MASTER are running fine first."
+            echo "- Make sure you have the containers routed through the MASTER container are running fine first."
         fi            
     fi    
     #post process inscope containers
