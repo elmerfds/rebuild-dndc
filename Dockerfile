@@ -9,7 +9,6 @@ RUN apt update && \
     apt update && \
     apt-cache policy docker-ce && \
     apt install docker-ce  && \
-    rc-update add docker boot && \
     mkdir -p /app/pf
 
 # Setting environment variables
