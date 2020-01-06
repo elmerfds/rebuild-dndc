@@ -1,14 +1,9 @@
-FROM hotio/base:latest
+FROM alpine:3.11.2
 LABEL MAINTAINER="eafxx"
 
 # Prerequisites
-RUN apt update && \
-    apt install -y install apt-transport-https ca-certificates curl software-properties-common &&\
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \ 
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \ 
-    apt update && \
-    apt-cache policy docker-ce && \
-    apt install -y docker-ce  && \
+RUN apk add --update docker openrc bash curl libxml2-utils jq tzdata && \ 
+    rc-update add docker boot && \
     mkdir -p /app/pf
 
 # Setting environment variables
