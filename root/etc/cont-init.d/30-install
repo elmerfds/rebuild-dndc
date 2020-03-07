@@ -97,7 +97,16 @@ then
   echo "- Save no of master cotnainer IDs, default - 5"
   save_no_masterids='5'
 else
-  echo "- Ping IP alt set: $save_no_masterids"
+  echo "- Save no of master cotnainer IDs: $save_no_masterids"
+fi
+
+#[---------- Save number of master contaienr IDs----------]
+if [ -z "$cont_list" ]
+then
+  echo "- No containers set for manual run"
+  $cont_list='none'
+else
+  echo "- List of containers to build on manual run: $cont_list"
 fi
 
 #[---------- RUN AT STARTUP ----------]
@@ -116,8 +125,7 @@ then
   --username "$discord_username" \
   --avatar "$rdndc_logo" \
   --title "VARIABLES IN USE" \
-  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Run at Startup:- $run_startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
-  --color "0x66ff33" \
+  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Save no of Master Container IDs:- $save_no_masterids\n- Manual Run Container List:- $cont_list\n- Run at Startup:- $run_startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \  --color "0x66ff33" \
   --author-icon "$rdndc_logo" \
   --footer-icon "$rdndc_logo"  &> /dev/null
   echo "- Pushed first notification to Discord"  
