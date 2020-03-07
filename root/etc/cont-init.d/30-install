@@ -91,6 +91,15 @@ else
   echo "- CRON schedule set: $cron"
 fi
 
+#[---------- Save number of master contaienr IDs----------]
+if [ -z "$save_no_masterids" ]
+then
+  echo "- Save no of master cotnainer IDs, default - 5"
+  save_no_masterids='5'
+else
+  echo "- Ping IP alt set: $save_no_masterids"
+fi
+
 #[---------- RUN AT STARTUP ----------]
 if [ "$run_startup" == "yes" ]
 then

@@ -14,7 +14,8 @@ ENV app_dir="/app/Rebuild-DNDC" \
     rdndc_logo="https://raw.githubusercontent.com/elmerfdz/unRAIDscripts/master/Rebuild-DNDC/img/rdndc-logo.png" \
     discord_username="Rebuild-DNDC" \
     pf_loc=/app/pf \
-    TZ=
+    TZ= \
+    cont_list= 
 
 # Add local files
 COPY Rebuild-DNDC/ /app/Rebuild-DNDC

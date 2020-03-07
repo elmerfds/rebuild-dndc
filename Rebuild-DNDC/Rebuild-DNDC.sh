@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.3-u
+ver=3.8.4-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -295,10 +295,17 @@ echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
-    #echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
+    masteridpool_mod
 fi
 echo 
 echo "------------------------------------------"
 echo " Run Completed: $datetime  "
 echo "------------------------------------------"
 echo
+
+
+masteridpool_mod()
+{
+    echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
+    tail -n $save_no_masterids allmastercontepid.tmp > allmastercontepid.tmp1 && mv allmastercontepid.tmp1 allmastercontepid.tmp
+}
