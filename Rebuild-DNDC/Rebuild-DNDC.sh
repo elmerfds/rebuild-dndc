@@ -263,6 +263,13 @@ then
 fi
 }
 
+#Keep track of current & past master cotnainer IDs
+masteridpool_mod()
+{
+    echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
+    tail -n $save_no_masterids allmastercontepid.tmp > allmastercontepid.tmp1 && mv allmastercontepid.tmp1 allmastercontepid.tmp
+}
+
 
 echo
 echo "---------------------------------"
@@ -302,10 +309,3 @@ echo "------------------------------------------"
 echo " Run Completed: $datetime  "
 echo "------------------------------------------"
 echo
-
-
-masteridpool_mod()
-{
-    echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
-    tail -n $save_no_masterids allmastercontepid.tmp > allmastercontepid.tmp1 && mv allmastercontepid.tmp1 allmastercontepid.tmp
-}
