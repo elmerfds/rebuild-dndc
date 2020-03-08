@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.4-u
+ver=3.8.5-u
 
 #NON-CONFIGURABLE VARS
 contname=''
