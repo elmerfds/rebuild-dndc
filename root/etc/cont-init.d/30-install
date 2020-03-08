@@ -125,7 +125,8 @@ then
   --username "$discord_username" \
   --avatar "$rdndc_logo" \
   --title "VARIABLES IN USE" \
-  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Save no of Master Container IDs:- $save_no_masterids\n- Manual Run Container List:- $cont_list\n- Run at Startup:- $run_startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \  --color "0x66ff33" \
+  --description "- Master Container Name:- $mastercontname\n- Master Cont Con Check:- $mastercontconcheck\n- Ping IP:- $ping_ip\n- Ping IP Alt:- $ping_ip_alt\n- Ping Count:- $ping_count\n- Sleep Seconds:- $sleep_secs\n- Cron Schedule:- $cron\n- Save no of Master Container IDs:- $save_no_masterids\n- Manual Run Container List:- $cont_list\n- Run at Startup:- $run_startup\n- Appdata Folder:- $mastercontepfile_loc\n- DockerTemplate Folder:- $docker_tmpl_loc\n- ParseDockerTemplate Script:- $rundockertemplate_script" \
+  --color "0x66ff33" \
   --author-icon "$rdndc_logo" \
   --footer-icon "$rdndc_logo"  &> /dev/null
   echo "- Pushed first notification to Discord"  
