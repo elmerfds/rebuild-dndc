@@ -105,18 +105,25 @@ inscope_container_vars()
     for ((a=0; a < "${#get_container_names[@]}"; a++)) 
     do
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
-        if [ "$pull_contnet_ids" == "$mastercontid" ]
-        then
-            list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
-            list_inscope_cont_ids+=(${get_container_ids[$a]})
-            list_inscope_contnames+=(${get_container_names[$a]})     
-            no=${#list_inscope_contnames[@]}
-            echo "$no ${get_container_names[$a]}"
-            echo "- ContainerID ${get_container_ids[$a]}"       
-            echo "- NetworkID: $pull_contnet_ids"              
-            echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
-            echo   
-        fi 
+        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontepid.tmp))
+        while true
+        do
+            am=0
+            if [ "$pull_contnet_ids" == "$mastercontid" ] || [ "$pull_contnet_ids" == "$pull_allmastercont_ids[$am]" ]
+            then
+                list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
+                list_inscope_cont_ids+=(${get_container_ids[$a]})
+                list_inscope_contnames+=(${get_container_names[$a]})     
+                no=${#list_inscope_contnames[@]}
+                echo "$no ${get_container_names[$a]}"
+                echo "- ContainerID ${get_container_ids[$a]}"       
+                echo "- NetworkID: $pull_contnet_ids"              
+                echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+                echo   
+                break
+            fi 
+            am=$((am+1))
+        done    
     done
    
     if [ "${list_inscope_contnames}" == '' ]
