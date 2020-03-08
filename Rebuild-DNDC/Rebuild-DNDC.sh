@@ -59,10 +59,11 @@ recreatecont_notify()
 #MAIN CODE
 first_run()
 {
-    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
+    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/allmastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
     then
         mkdir -p "$mastercontepfile_loc" && touch "$mastercontepfile_loc/mastercontepid.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_ids.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_names.tmp"
         echo "$getmastercontendpointid" > $mastercontepfile_loc/mastercontepid.tmp
+        echo "$mastercontid" > $mastercontepfile_loc/allmastercontepid.tmp
         echo "A. FIRST-RUN: SETUP COMPLETE"
         if [ "$unraid_notifications" == "yes" ]
         then              
@@ -106,9 +107,10 @@ inscope_container_vars()
     do
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
         pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontepid.tmp))
+        echo ${#pull_allmastercont_ids[@]}
+        am=0
         while true
         do
-            am=0
             if [ "$pull_contnet_ids" == "$mastercontid" ] || [ "$pull_contnet_ids" == "$pull_allmastercont_ids[$am]" ]
             then
                 list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
