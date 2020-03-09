@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.8-u
+ver=3.9.0-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -15,7 +15,7 @@ get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
 
 
-#NOTIFICATIONS
+#NOTIFICATIONS - Recreate Complete
 recreatecont_notify_complete()
 {
     echo "REBUILDING - Completed!: ${recreatecont_notify_complete_msg[*]}"
@@ -29,6 +29,7 @@ recreatecont_notify_complete()
     fi
 }
 
+#NOTIFICATIONS - Recreate Notify
 recreatecont_notify()
 {
     if [ "$getmastercontendpointid" != "$currentendpointid" ]
@@ -83,6 +84,7 @@ first_run()
     fi
 }
 
+#Check Master Container Endpoint ID
 check_masterendpointid()
 {
     if [ "$getmastercontendpointid" == "$currentendpointid" ]
@@ -98,6 +100,7 @@ check_masterendpointid()
     fi 
 }
 
+#Detecting In-scope Containers For Rebuild - Main 
 inscope_container_vars()
 {
     echo "C. DETECTING: IN-SCOPE CONTAINERS"
@@ -127,7 +130,8 @@ inscope_container_vars()
             break
         done    
     done
-   
+
+    #Pulling Previously Detected In-scope Containers - Fallback Option
     if [ "${list_inscope_contnames}" == '' ]
     then
         echo "# RESULTS: None in-scope, checking for previous in-scope containers"
@@ -142,10 +146,10 @@ inscope_container_vars()
         fi            
     fi    
     #post process inscope containers
-    inscope_container_vars_post
- 
+    inscope_container_vars_post 
 }
 
+#Saving Detected In-scope Containers - For Fallback Option
 inscope_container_vars_post(){
     echo "${list_inscope_cont_ids[@]}" > $mastercontepfile_loc/list_inscope_cont_ids.tmp;    
     echo "${list_inscope_contnames[@]}" > $mastercontepfile_loc/list_inscope_cont_names.tmp;    
@@ -164,6 +168,7 @@ inscope_container_vars_post(){
     done
 }
 
+#Check Master Container Network & Endpoint IDs
 check_networkmodeid()
 {
     contnetmode=$(docker inspect $contname --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g')
@@ -182,6 +187,7 @@ check_networkmodeid()
     fi
 }
 
+#Rebuild In-scope Containers
 rebuild_mod()
 {
     buildcont_cmd="$rundockertemplate_script -v $CONT_TMPL"    
@@ -211,6 +217,7 @@ rebuild_mod()
     fi
 }
 
+#Port Forwarding For Supported Apps
 app_pf()
 {
     echo
@@ -222,6 +229,11 @@ app_pf()
         echo "  ruTorrent PF              "
         echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        if [ "$vpn_pf" == "0" ] 
+        then  
+            mastercontconnectivity_mod
+            startapp_mod
+        fi      
         rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
         get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
@@ -246,9 +258,9 @@ app_pf()
     fi
 }
 
+#Check Master Container WAN connectivity
 mastercontconnectivity_mod()
 {
-#Check if MASTER container network has connectivity
 if [ "$mastercontconcheck" == "yes" ]
 then
     docker exec $mastercontname ping -c $ping_count $ping_ip &> /dev/null
@@ -282,7 +294,9 @@ then
 fi
 }
 
-
+#App Run layout & Workflow
+startapp_mod()
+{
 echo
 echo "---------------------------------"
 echo "    Rebuild-DNDC v$ver     "
@@ -310,6 +324,7 @@ then
     app_pf
 fi
 
+#Rebuild Complete Notification & Store Mster ContainerID to ID tracker pool
 echo
 if [ "$was_rebuild" == 1 ]
 then 
@@ -324,3 +339,7 @@ echo "------------------------------------------"
 echo " Run Completed: $datetime  "
 echo "------------------------------------------"
 echo
+}
+
+#Start app
+startapp_mod
