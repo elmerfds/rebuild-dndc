@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.7-u
+ver=3.8.8-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -275,8 +275,11 @@ fi
 #Keep track of current & past master cotnainer IDs
 masteridpool_mod()
 {
+if ! grep -Fxq "$mastercontid" $mastercontepfile_loc/allmastercontid.tmp
+then
     echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
     tail -n $save_no_masterids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
+fi
 }
 
 
