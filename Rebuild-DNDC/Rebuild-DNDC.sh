@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.5-u
+ver=3.8.6-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -59,11 +59,11 @@ recreatecont_notify()
 #MAIN CODE
 first_run()
 {
-    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/allmastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
+    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/allmastercontid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
     then
         mkdir -p "$mastercontepfile_loc" && touch "$mastercontepfile_loc/mastercontepid.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_ids.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_names.tmp"
         echo "$getmastercontendpointid" > $mastercontepfile_loc/mastercontepid.tmp
-        echo "$mastercontid" > $mastercontepfile_loc/allmastercontepid.tmp
+        echo "$mastercontid" > $mastercontepfile_loc/allmastercontid.tmp
         echo "A. FIRST-RUN: SETUP COMPLETE"
         if [ "$unraid_notifications" == "yes" ]
         then              
@@ -106,7 +106,7 @@ inscope_container_vars()
     for ((a=0; a < "${#get_container_names[@]}"; a++)) 
     do
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
-        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontepid.tmp))
+        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontid.tmp))
         while true
         do
             for ((u=0; u < "${#pull_allmastercont_ids[@]}"; u++)) 
@@ -275,8 +275,8 @@ fi
 #Keep track of current & past master cotnainer IDs
 masteridpool_mod()
 {
-    echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
-    tail -n $save_no_masterids allmastercontepid.tmp > allmastercontepid.tmp1 && mv allmastercontepid.tmp1 allmastercontepid.tmp
+    echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
+    tail -n $save_no_masterids allmastercontid.tmp > allmastercontid.tmp1 && mv allmastercontid.tmp1 allmastercontid.tmp
 }
 
 
