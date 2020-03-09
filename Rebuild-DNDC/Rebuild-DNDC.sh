@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.5-u
+ver=3.8.8-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -59,10 +59,11 @@ recreatecont_notify()
 #MAIN CODE
 first_run()
 {
-    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
+    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/allmastercontid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
     then
         mkdir -p "$mastercontepfile_loc" && touch "$mastercontepfile_loc/mastercontepid.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_ids.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_names.tmp"
         echo "$getmastercontendpointid" > $mastercontepfile_loc/mastercontepid.tmp
+        echo "$mastercontid" > $mastercontepfile_loc/allmastercontid.tmp
         echo "A. FIRST-RUN: SETUP COMPLETE"
         if [ "$unraid_notifications" == "yes" ]
         then              
@@ -105,24 +106,25 @@ inscope_container_vars()
     for ((a=0; a < "${#get_container_names[@]}"; a++)) 
     do
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
-        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontepid.tmp))
+        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontid.tmp))
         while true
         do
-            am=0
-            if [ "$pull_contnet_ids" == "$mastercontid" ] || [ "$pull_contnet_ids" == "$pull_allmastercont_ids[$am]" ]
-            then
-                list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
-                list_inscope_cont_ids+=(${get_container_ids[$a]})
-                list_inscope_contnames+=(${get_container_names[$a]})     
-                no=${#list_inscope_contnames[@]}
-                echo "$no ${get_container_names[$a]}"
-                echo "- ContainerID ${get_container_ids[$a]}"       
-                echo "- NetworkID: $pull_contnet_ids"              
-                echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
-                echo   
-                break
-            fi 
-            am=$((am+1))
+            for ((u=0; u < "${#pull_allmastercont_ids[@]}"; u++)) 
+            do  
+                if [ "$pull_contnet_ids" == "${pull_allmastercont_ids[$u]}" ]
+                then
+                    list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
+                    list_inscope_cont_ids+=(${get_container_ids[$a]})
+                    list_inscope_contnames+=(${get_container_names[$a]})     
+                    no=${#list_inscope_contnames[@]}
+                    echo "$no ${get_container_names[$a]}"
+                    echo "- ContainerID ${get_container_ids[$a]}"       
+                    echo "- NetworkID: $pull_contnet_ids"              
+                    echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+                    echo   
+                fi 
+            done    
+            break
         done    
     done
    
@@ -273,8 +275,11 @@ fi
 #Keep track of current & past master cotnainer IDs
 masteridpool_mod()
 {
-    echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
-    tail -n $save_no_masterids allmastercontepid.tmp > allmastercontepid.tmp1 && mv allmastercontepid.tmp1 allmastercontepid.tmp
+if ! grep -Fxq "$mastercontid" $mastercontepfile_loc/allmastercontid.tmp
+then
+    echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
+    tail -n $save_no_masterids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
+fi
 }
 
 
@@ -309,7 +314,10 @@ echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
-    masteridpool_mod
+    if [ "$was_run" == 0 ]
+    then 
+        masteridpool_mod
+    fi
 fi
 echo 
 echo "------------------------------------------"
