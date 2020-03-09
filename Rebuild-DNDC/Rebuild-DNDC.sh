@@ -311,7 +311,7 @@ echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
-    if [ "$was_run" == 1 ]
+    if [ "$was_run" == 0 ]
     then 
         masteridpool_mod
     fi
