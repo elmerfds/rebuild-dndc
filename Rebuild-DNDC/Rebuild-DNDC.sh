@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.8-u
+ver=3.8.9-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -222,6 +222,11 @@ app_pf()
         echo "  ruTorrent PF              "
         echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        if [ "$vpn_pf" == "0" ] 
+        then  
+            mastercontconnectivity_mod
+            startapp_mod
+        fi      
         rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
         get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
@@ -282,7 +287,8 @@ then
 fi
 }
 
-
+startapp_mod()
+{
 echo
 echo "---------------------------------"
 echo "    Rebuild-DNDC v$ver     "
@@ -324,3 +330,7 @@ echo "------------------------------------------"
 echo " Run Completed: $datetime  "
 echo "------------------------------------------"
 echo
+}
+
+#Start app
+startapp_mod
