@@ -130,7 +130,8 @@ inscope_container_vars()
             break
         done    
     done
-   
+
+    #Pulling Previously Detected In-scope Containers - Fallback Option
     if [ "${list_inscope_contnames}" == '' ]
     then
         echo "# RESULTS: None in-scope, checking for previous in-scope containers"
@@ -148,7 +149,7 @@ inscope_container_vars()
     inscope_container_vars_post 
 }
 
-#Pulling Previously Detected In-scope Containers - Fallback Option
+#Saving Detected In-scope Containers - For Fallback Option
 inscope_container_vars_post(){
     echo "${list_inscope_cont_ids[@]}" > $mastercontepfile_loc/list_inscope_cont_ids.tmp;    
     echo "${list_inscope_contnames[@]}" > $mastercontepfile_loc/list_inscope_cont_names.tmp;    
