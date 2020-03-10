@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.0-u
+ver=3.9.1-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -230,7 +230,11 @@ app_pf()
         echo "----------------------------"         
         vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
         if [ "$vpn_pf" == "0" ] 
-        then  
+        then
+            unset list_inscope_cont_ids
+            unset list_inscope_contnames
+            unset list_inscope_cont_tmpl
+            docker restart $mastercontname  &> /dev/null  
             mastercontconnectivity_mod
             startapp_mod
         fi      
