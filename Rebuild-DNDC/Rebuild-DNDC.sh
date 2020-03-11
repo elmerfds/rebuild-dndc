@@ -1,7 +1,22 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.2-u
+ver=3.9.3-u
+#Run only one instance of script
+SCRIPTNAME=`basename $0`
+PIDFILE=/var/run/${SCRIPTNAME}.pid
+if [ -f ${PIDFILE} ]; then
+   #verify if the process is actually still running under this pid
+   OLDPID=`cat ${PIDFILE}`
+   RESULT=`ps -ef | grep ${OLDPID} | grep ${SCRIPTNAME}`
+   if [ -n "${RESULT}" ]; then
+     echo "Script already running! Exiting"
+     exit 255
+   fi
+fi
+#grab pid of this process and update the pid file with it
+PID=`ps -ef | grep ${SCRIPTNAME} | head -n1 |  awk ' {print $2;} '`
+echo ${PID} > ${PIDFILE}
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -273,7 +288,7 @@ app_pf()
             fi
         elif [ "$rutorrent_pf_status" == "0" ]
         then
-            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "                 
+            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name PF port set is current: $vpn_pf "                 
         fi
     fi
 }
@@ -369,3 +384,8 @@ echo
 startapp_mod
 #Sign-off app
 signoffapp_mod
+
+#PID cleanup
+if [ -f ${PIDFILE} ]; then
+    rm ${PIDFILE}
+fi
