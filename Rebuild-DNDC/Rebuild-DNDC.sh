@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.1-u
+ver=3.9.2-u
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -218,6 +218,11 @@ rebuild_mod()
 }
 
 #Port Forwarding For Supported Apps
+get_pf_mod()
+{
+    vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+}
+
 app_pf()
 {
     echo
@@ -228,16 +233,27 @@ app_pf()
         echo "----------------------------"
         echo "  ruTorrent PF              "
         echo "----------------------------"         
-        vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
-        if [ "$vpn_pf" == "0" ] 
-        then
+        get_pf_mod
+        while [ "$vpn_pf" == "0" ]
+        do 
+            echo "- Seems like $mastercontname container has failed to port forward, attempting to fix."
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Seems like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             unset list_inscope_cont_ids
             unset list_inscope_contnames
             unset list_inscope_cont_tmpl
-            docker restart $mastercontname  &> /dev/null  
+            unset recreatecont_notify_complete_msg
+            docker restart $mastercontname  &> /dev/null
+            echo "- BREAK: Quick 20sec nap before checking the $mastercontname container for WAN connectivity"            
+            sleep 20  
             mastercontconnectivity_mod
-            startapp_mod
-        fi      
+            get_pf_mod
+            if [ "$vpn_pf" != "0" ] 
+            then
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Seems like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                startapp_mod
+                break
+            fi    
+        done     
         rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
         get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
@@ -328,7 +344,11 @@ then
     app_pf
 fi
 
-#Rebuild Complete Notification & Store Mster ContainerID to ID tracker pool
+}
+
+#Rebuild Complete Notification & Store Master ContainerID to ID tracker pool
+signoffapp_mod()
+{
 echo
 if [ "$was_rebuild" == 1 ]
 then 
@@ -347,3 +367,5 @@ echo
 
 #Start app
 startapp_mod
+#Sign-off app
+signoffapp_mod
