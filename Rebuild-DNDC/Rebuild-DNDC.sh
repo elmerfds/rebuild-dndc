@@ -1,7 +1,24 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.8.3-u
+ver=3.9.4-u
+#Run only one instance of script
+SCRIPTNAME=`basename $0`
+PIDFILE=/var/run/${SCRIPTNAME}.pid
+if [ -f ${PIDFILE} ]; then
+   #verify if the process is actually still running under this pid
+   OLDPID=`cat ${PIDFILE}`
+   RESULT=`ps -ef | grep ${OLDPID} | grep ${SCRIPTNAME}`
+   if [ -n "${RESULT}" ]; then
+     echo
+     echo "Script already running! Try again later."
+     echo
+     exit 255
+   fi
+fi
+#grab pid of this process and update the pid file with it
+PID=`ps -ef | grep ${SCRIPTNAME} | head -n1 |  awk ' {print $2;} '`
+echo ${PID} > ${PIDFILE}
 
 #NON-CONFIGURABLE VARS
 contname=''
@@ -15,7 +32,7 @@ get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 
 
 
-#NOTIFICATIONS
+#NOTIFICATIONS - Recreate Complete
 recreatecont_notify_complete()
 {
     echo "REBUILDING - Completed!: ${recreatecont_notify_complete_msg[*]}"
@@ -29,6 +46,7 @@ recreatecont_notify_complete()
     fi
 }
 
+#NOTIFICATIONS - Recreate Notify
 recreatecont_notify()
 {
     if [ "$getmastercontendpointid" != "$currentendpointid" ]
@@ -59,10 +77,11 @@ recreatecont_notify()
 #MAIN CODE
 first_run()
 {
-    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
+    if [ ! -d "$mastercontepfile_loc" ] || [ ! -e "$mastercontepfile_loc/mastercontepid.tmp" ] || [ ! -e "$mastercontepfile_loc/allmastercontid.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_ids.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" ] || [ ! -e "$mastercontepfile_loc/list_inscope_cont_names.tmp" ]  
     then
         mkdir -p "$mastercontepfile_loc" && touch "$mastercontepfile_loc/mastercontepid.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_ids.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_tmpl.tmp" && touch "$mastercontepfile_loc/list_inscope_cont_names.tmp"
         echo "$getmastercontendpointid" > $mastercontepfile_loc/mastercontepid.tmp
+        echo "$mastercontid" > $mastercontepfile_loc/allmastercontid.tmp
         echo "A. FIRST-RUN: SETUP COMPLETE"
         if [ "$unraid_notifications" == "yes" ]
         then              
@@ -82,6 +101,7 @@ first_run()
     fi
 }
 
+#Check Master Container Endpoint ID
 check_masterendpointid()
 {
     if [ "$getmastercontendpointid" == "$currentendpointid" ]
@@ -97,6 +117,7 @@ check_masterendpointid()
     fi 
 }
 
+#Detecting In-scope Containers For Rebuild - Main 
 inscope_container_vars()
 {
     echo "C. DETECTING: IN-SCOPE CONTAINERS"
@@ -105,20 +126,29 @@ inscope_container_vars()
     for ((a=0; a < "${#get_container_names[@]}"; a++)) 
     do
         pull_contnet_ids=($(docker inspect ${get_container_names[$a]} --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g'))
-        if [ "$pull_contnet_ids" == "$mastercontid" ]
-        then
-            list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
-            list_inscope_cont_ids+=(${get_container_ids[$a]})
-            list_inscope_contnames+=(${get_container_names[$a]})     
-            no=${#list_inscope_contnames[@]}
-            echo "$no ${get_container_names[$a]}"
-            echo "- ContainerID ${get_container_ids[$a]}"       
-            echo "- NetworkID: $pull_contnet_ids"              
-            echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
-            echo   
-        fi 
+        pull_allmastercont_ids=($(<$mastercontepfile_loc/allmastercontid.tmp))
+        while true
+        do
+            for ((u=0; u < "${#pull_allmastercont_ids[@]}"; u++)) 
+            do  
+                if [ "$pull_contnet_ids" == "${pull_allmastercont_ids[$u]}" ]
+                then
+                    list_inscope_cont_tmpl+=($(find $docker_tmpl_loc -type f -iname "*-${get_container_names[$a]}.xml"))
+                    list_inscope_cont_ids+=(${get_container_ids[$a]})
+                    list_inscope_contnames+=(${get_container_names[$a]})     
+                    no=${#list_inscope_contnames[@]}
+                    echo "$no ${get_container_names[$a]}"
+                    echo "- ContainerID ${get_container_ids[$a]}"       
+                    echo "- NetworkID: $pull_contnet_ids"              
+                    echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+                    echo   
+                fi 
+            done    
+            break
+        done    
     done
-   
+
+    #Pulling Previously Detected In-scope Containers - Fallback Option
     if [ "${list_inscope_contnames}" == '' ]
     then
         echo "# RESULTS: None in-scope, checking for previous in-scope containers"
@@ -133,10 +163,10 @@ inscope_container_vars()
         fi            
     fi    
     #post process inscope containers
-    inscope_container_vars_post
- 
+    inscope_container_vars_post 
 }
 
+#Saving Detected In-scope Containers - For Fallback Option
 inscope_container_vars_post(){
     echo "${list_inscope_cont_ids[@]}" > $mastercontepfile_loc/list_inscope_cont_ids.tmp;    
     echo "${list_inscope_contnames[@]}" > $mastercontepfile_loc/list_inscope_cont_names.tmp;    
@@ -155,6 +185,7 @@ inscope_container_vars_post(){
     done
 }
 
+#Check Master Container Network & Endpoint IDs
 check_networkmodeid()
 {
     contnetmode=$(docker inspect $contname --format="{{ .HostConfig.NetworkMode }}" | sed -e 's/container://g')
@@ -173,6 +204,7 @@ check_networkmodeid()
     fi
 }
 
+#Rebuild In-scope Containers
 rebuild_mod()
 {
     buildcont_cmd="$rundockertemplate_script -v $CONT_TMPL"    
@@ -202,6 +234,12 @@ rebuild_mod()
     fi
 }
 
+#Port Forwarding For Supported Apps
+get_pf_mod()
+{
+    vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+}
+
 app_pf()
 {
     echo
@@ -212,7 +250,27 @@ app_pf()
         echo "----------------------------"
         echo "  ruTorrent PF              "
         echo "----------------------------"         
-        vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        get_pf_mod
+        while [ "$vpn_pf" == "0" ]
+        do 
+            echo "- Seems like $mastercontname container has failed to port forward, attempting to fix."
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Seems like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            unset list_inscope_cont_ids
+            unset list_inscope_contnames
+            unset list_inscope_cont_tmpl
+            unset recreatecont_notify_complete_msg
+            docker restart $mastercontname  &> /dev/null
+            echo "- BREAK: Quick 20sec nap before checking the $mastercontname container for WAN connectivity"            
+            sleep 20  
+            mastercontconnectivity_mod
+            get_pf_mod
+            if [ "$vpn_pf" != "0" ] 
+            then
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Seems like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                startapp_mod
+                break
+            fi    
+        done     
         rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
         get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
@@ -232,14 +290,14 @@ app_pf()
             fi
         elif [ "$rutorrent_pf_status" == "0" ]
         then
-            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name pf port set is current, using: $vpn_pf "                 
+            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name PF port set is current: $vpn_pf "                 
         fi
     fi
 }
 
+#Check Master Container WAN connectivity
 mastercontconnectivity_mod()
 {
-#Check if MASTER container network has connectivity
 if [ "$mastercontconcheck" == "yes" ]
 then
     docker exec $mastercontname ping -c $ping_count $ping_ip &> /dev/null
@@ -263,7 +321,19 @@ then
 fi
 }
 
+#Keep track of current & past master cotnainer IDs
+masteridpool_mod()
+{
+if ! grep -Fxq "$mastercontid" $mastercontepfile_loc/allmastercontid.tmp
+then
+    echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
+    tail -n $save_no_masterids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
+fi
+}
 
+#App Run layout & Workflow
+startapp_mod()
+{
 echo
 echo "---------------------------------"
 echo "    Rebuild-DNDC v$ver     "
@@ -291,14 +361,33 @@ then
     app_pf
 fi
 
+}
+
+#Rebuild Complete Notification & Store Master ContainerID to ID tracker pool
+signoffapp_mod()
+{
 echo
 if [ "$was_rebuild" == 1 ]
 then 
     recreatecont_notify_complete
-    #echo "$getmastercontendpointid" >> $mastercontepfile_loc/allmastercontepid.tmp
+    if [ "$was_run" == 0 ]
+    then 
+        masteridpool_mod
+    fi
 fi
 echo 
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo " Run Completed: $datetime  "
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo
+}
+
+#Start app
+startapp_mod
+#Sign-off app
+signoffapp_mod
+
+#PID cleanup
+if [ -f ${PIDFILE} ]; then
+    rm ${PIDFILE}
+fi
