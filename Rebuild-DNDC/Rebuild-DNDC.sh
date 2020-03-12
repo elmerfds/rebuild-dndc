@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.3-u
+ver=3.9.4-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -10,7 +10,9 @@ if [ -f ${PIDFILE} ]; then
    OLDPID=`cat ${PIDFILE}`
    RESULT=`ps -ef | grep ${OLDPID} | grep ${SCRIPTNAME}`
    if [ -n "${RESULT}" ]; then
-     echo "Script already running! Exiting"
+     echo
+     echo "Script already running! Try again later."
+     echo
      exit 255
    fi
 fi
@@ -374,9 +376,9 @@ then
     fi
 fi
 echo 
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo " Run Completed: $datetime  "
-echo "------------------------------------------"
+echo "--------------------------------------------"
 echo
 }
 
