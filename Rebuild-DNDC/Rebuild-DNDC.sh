@@ -137,10 +137,10 @@ inscope_container_vars()
                     list_inscope_cont_ids+=(${get_container_ids[$a]})
                     list_inscope_contnames+=(${get_container_names[$a]})     
                     no=${#list_inscope_contnames[@]}
-                    echo "$no ${get_container_names[$a]}"
-                    echo "- ContainerID ${get_container_ids[$a]}"       
-                    echo "- NetworkID: $pull_contnet_ids"              
-                    echo "- Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+                    echo "$no. ${get_container_names[$a]}"
+                    echo " - ContainerID ${get_container_ids[$a]}"       
+                    echo " - NetworkID: $pull_contnet_ids"              
+                    echo " - Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
                     echo   
                 fi 
             done    
@@ -158,8 +158,8 @@ inscope_container_vars()
         list_inscope_cont_tmpl=($(<$mastercontepfile_loc/list_inscope_cont_tmpl.tmp))
         if [ "${list_inscope_contnames}" == '' ]
         then
-            echo "- No containers in scope."
-            echo "- Make sure you have the containers routed through the MASTER container are running fine first."
+            echo " - No containers in scope."
+            echo " - Make sure you have the containers routed through the MASTER container are running fine first."
         fi            
     fi    
     #post process inscope containers
@@ -195,11 +195,11 @@ check_networkmodeid()
         recreatecont_notify_complete_msg+=(${contname[@]})
     elif [ "$contnetmode" == "$mastercontid" ]
     then
-        echo "- SKIPPING: $contname NETID = MASTER NETID"
+        echo " - SKIPPING: $contname NETID = MASTER NETID"
     elif [ "$contnetmode" != "$mastercontid" ]
     then
         echo
-        echo "- $contname NetModeID doesn't match with $mastercontname ContID"
+        echo " - $contname NetModeID doesn't match with $mastercontname ContID"
         rebuild_mod
     fi
 }
@@ -220,7 +220,7 @@ rebuild_mod()
                 build_stage_cmd=${build_stage_cmd_var[$d]}
             echo
             echo "----------------------------"
-            echo "  $build_stage $contname   "
+            echo "  $build_stage: $contname   "
             echo "----------------------------"
             echo
             $build_stage_cmd
@@ -247,20 +247,20 @@ app_pf()
     echo
     if [ "$rutorrent_pf" == "yes" ] 
     then
-        echo "----------------------------"
-        echo "  ruTorrent PF              "
-        echo "----------------------------"         
+        echo '----------------------------'
+        echo '        ruTorrent PF        '
+        echo '----------------------------'         
         get_pf_mod
         while [ "$vpn_pf" == "0" ]
         do 
-            echo "- Seems like $mastercontname container has failed to port forward, attempting to fix."
+            echo " - Seems like $mastercontname container has failed to port forward, attempting to fix."
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Seems like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             unset list_inscope_cont_ids
             unset list_inscope_contnames
             unset list_inscope_cont_tmpl
             unset recreatecont_notify_complete_msg
             docker restart $mastercontname  &> /dev/null
-            echo "- BREAK: Quick 20sec nap before checking the $mastercontname container for WAN connectivity"            
+            echo " - BREAK: Quick 20sec nap before checking the $mastercontname container for WAN connectivity"            
             sleep 20  
             mastercontconnectivity_mod
             get_pf_mod
@@ -279,18 +279,18 @@ app_pf()
             sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
             sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
             sed -i "s/^ip.*/ip = $get_vpn_wan_ip/" $rutorrent_rc_loc
-            echo "- PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
-            echo "- BREAK: Quick 5sec nap before restarting $rutorrent_cont_name"
+            echo " - PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf"
+            echo " - BREAK: Quick 5sec nap before restarting $rutorrent_cont_name"
             sleep 5
             docker restart $rutorrent_cont_name  &> /dev/null
-            echo "- RESTARTED: $rutorrent_cont_name"
+            echo " - RESTARTED: $rutorrent_cont_name"
             if [ "$discord_notifications" == "yes" ]
             then        
                 ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             fi
         elif [ "$rutorrent_pf_status" == "0" ]
         then
-            echo "- PORT-FORWARD STATUS: $rutorrent_cont_name PF port set is current: $vpn_pf "                 
+            echo " - PORT-FORWARD STATUS: $rutorrent_cont_name PF port set is current: $vpn_pf "                 
         fi
     fi
 }
@@ -303,18 +303,18 @@ then
     docker exec $mastercontname ping -c $ping_count $ping_ip &> /dev/null
     if [ "$?" == 0 ]
     then
-        echo "- CONNECTIVITY: OK"
+        echo ' - CONNECTIVITY: OK'
     else
         docker exec $mastercontname ping -c $ping_count $ping_ip_alt &> /dev/null
         if [ "$?" == 0 ]
         then
-            echo "- CONNECTIVITY: OK"
+            echo ' - CONNECTIVITY: OK'
         else
-            echo "- CONNECTIVITY: BROKEN"
-            echo "---- restarting $mastercontname" container
+            echo ' - CONNECTIVITY: BROKEN'
+            echo " ---- restarting $mastercontname" container
             docker restart $mastercontname &> /dev/null
-            echo "---- $mastercontname restarted"
-            echo "---- going to sleep for $sleep_secs seconds"
+            echo " ---- $mastercontname restarted"
+            echo " ---- going to sleep for $sleep_secs seconds"
             sleep $sleep_secs    
         fi    
     fi
@@ -335,18 +335,18 @@ fi
 startapp_mod()
 {
 echo
-echo "---------------------------------"
+echo '---------------------------------'
 echo "    Rebuild-DNDC v$ver     "
-echo "---------------------------------"
+echo '---------------------------------'
 echo
 
-echo "-----------------------------------------------------------------------------------"
-echo "# MASTER CONTAINER INFO"
-echo "- CONTAINER-NAME: $mastercontname"
-echo "- ENDPOINT-ID: $getmastercontendpointid"
-echo "- NETWORKMODE-ID: $mastercontid"
+echo '-----------------------------------------------------------------------------------'
+echo '# MASTER CONTAINER INFO'
+echo " - CONTAINER-NAME: $mastercontname"
+echo " - ENDPOINT-ID: $getmastercontendpointid"
+echo " - NETWORKMODE-ID: $mastercontid"
 mastercontconnectivity_mod
-echo "-----------------------------------------------------------------------------------"
+echo '-----------------------------------------------------------------------------------'
 echo 
 
 #check first run
@@ -376,9 +376,9 @@ then
     fi
 fi
 echo 
-echo "--------------------------------------------"
+echo '--------------------------------------------'
 echo " Run Completed: $datetime  "
-echo "--------------------------------------------"
+echo '--------------------------------------------'
 echo
 }
 

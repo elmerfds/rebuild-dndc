@@ -3,16 +3,17 @@ chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
 
-echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-echo                       Rebuild-DNDC
-echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-echo
-echo Author: https://github.com/elmerfdz
-echo Support: https://github.com/elmerfdz/unRAIDscripts/issues
-echo
-echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-echo
-echo "-- Config"
+echo '
+----------------------------------------------------
+  ____    ____    _   _   ____     ____ 
+ |  _ \  |  _ \  | \ | | |  _ \   / ___|
+ | |_) | | | | | |  \| | | | | | | |    
+ |  _ <  | |_| | | |\  | | |_| | | |___ 
+ |_| \_\ |____/  |_| \_| |____/   \____|
+                                        
+Author: https://github.com/elmerfdz
+Support: https://github.com/elmerfdz/unRAIDscripts
+----------------------------------------------------'
 echo
 echo '[---------- VARIABLES CHECK ----------]'
 echo
