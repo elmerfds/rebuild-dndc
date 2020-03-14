@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.4-u
+ver=3.9.5-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
