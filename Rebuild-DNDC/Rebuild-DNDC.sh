@@ -213,7 +213,6 @@ rebuild_mod()
     buildcont_cmd="$rundockertemplate_script -v $CONT_TMPL"    
     build_stage_var=('Stopping' 'Removing' 'Recreating')
     build_stage_cmd_var=("docker stop $contname" "docker rm $contname" "$buildcont_cmd")
-
     if [ "$getmastercontendpointid" != "$currentendpointid" ] || [ "$mastercontid" != "$contnetmode" ]
     then
         #Cycle through build commands
