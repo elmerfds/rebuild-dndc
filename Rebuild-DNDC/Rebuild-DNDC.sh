@@ -137,10 +137,10 @@ inscope_container_vars()
                     list_inscope_cont_ids+=(${get_container_ids[$a]})
                     list_inscope_contnames+=(${get_container_names[$a]})     
                     no=${#list_inscope_contnames[@]}
-                    echo "$no. ${get_container_names[$a]}"
-                    echo " - ContainerID ${get_container_ids[$a]}"       
-                    echo " - NetworkID: $pull_contnet_ids"              
-                    echo " - Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
+                    echo "$no.${get_container_names[$a]}"
+                    echo "  - ContainerID ${get_container_ids[$a]}"       
+                    echo "  - NetworkID: $pull_contnet_ids"              
+                    echo "  - Template Location: ${list_inscope_cont_tmpl[$b]}"; b=$((b + 1))       
                     echo   
                 fi 
             done    
