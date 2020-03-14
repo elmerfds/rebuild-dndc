@@ -37,7 +37,7 @@ get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 recreatecont_notify_complete()
 {
     printf "F. REBUILD: STATUS\n"      
-    printf " - REBUILD - Completed!: ${recreatecont_notify_complete_msg[*]}\n"
+    printf "  - REBUILD - Completed: ${recreatecont_notify_complete_msg[*]}\n"
     if [ "$unraid_notifications" == "yes" ]
     then    
         /usr/local/emhttp/webGui/scripts/notify -i "normal"  -s "Rebuild-DNDC"  -d "- REBUILD: ${recreatecont_notify_complete_msg[*]} Completed "
@@ -53,7 +53,7 @@ recreatecont_notify()
 {
     if [ "$getmastercontendpointid" != "$currentendpointid" ]
     then 
-        printf "- REBUILDING: $mastercontname container EndpointID doesn't match\n"
+        printf "  - REBUILDING: $mastercontname container ENDPOINTID DOESN'T MATCH\n"
         if [ "$unraid_notifications" == "yes" ]
         then              
             /usr/local/emhttp/webGui/scripts/notify -i "warning" -s "Rebuild-DNDC"  -d "- REBUILDING: $mastercontname container EndpointID doesn't match" 
@@ -64,7 +64,7 @@ recreatecont_notify()
         fi
     elif [ "$contnetmode" != "$mastercontid" ]
     then
-        printf "- REBUILDING: ${recreatecont_notify_complete_msg[*]}\n"
+        printf "  - REBUILDING: ${recreatecont_notify_complete_msg[*]}\n"
         if [ "$unraid_notifications" == "yes" ]
         then           
             /usr/local/emhttp/webGui/scripts/notify -i "warning"  -s "Rebuild-DNDC"  -d "- REBUILDING: ${recreatecont_notify_complete_msg[*]} "
