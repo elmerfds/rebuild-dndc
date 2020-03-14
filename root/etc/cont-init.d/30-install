@@ -2,7 +2,17 @@
 chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
-echo "-- Rebuild-DNDC Config"
+
+echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+echo                       Rebuild-DNDC
+echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+echo
+echo Author: https://github.com/elmerfdz
+echo Support: https://github.com/elmerfdz/unRAIDscripts/issues
+echo
+echo =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+echo
+echo "-- Config"
 echo
 echo '[---------- VARIABLES CHECK ----------]'
 echo
