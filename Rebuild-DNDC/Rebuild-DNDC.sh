@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.5-u
+ver=3.9.6-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -36,8 +36,8 @@ get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 #NOTIFICATIONS - Recreate Complete
 recreatecont_notify_complete()
 {
-    printf "F. REBUILD: STATUS\n"      
-    printf "  - REBUILD - Completed: ${recreatecont_notify_complete_msg[*]}\n"
+    printf "F. REBUILD: STATUS\n "      
+    printf " - Completed: ${recreatecont_notify_complete_msg[*]}\n"
     if [ "$unraid_notifications" == "yes" ]
     then    
         /usr/local/emhttp/webGui/scripts/notify -i "normal"  -s "Rebuild-DNDC"  -d "- REBUILD: ${recreatecont_notify_complete_msg[*]} Completed "
@@ -204,6 +204,7 @@ check_networkmodeid()
         echo
         printf " - $contname NetModeID doesn't match with $mastercontname ContID\n"
         rebuild_mod
+        recreatecont_notify_complete_msg+=(${contname[@]})
     fi
 }
 
