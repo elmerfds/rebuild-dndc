@@ -85,20 +85,27 @@ Container images are configured using parameters passed at runtime (such as thos
 
 If for some reason master container dependent containers have failed to be **created**, you can start several containers using a single command, which is far more convenient than doing it through the unRAID GUI.
 
-`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -b container01 container02 container03"`
+Interactive Shell
 
-or
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -b container01 container02 container03'`
 
-SSH onto Rebuild-DNDC container and enter: `rebuildm -b $cont_list`
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -f container01 container02 container03'`
 
-or
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -b  $cont_list'`
 
-`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -f container01 container02 container03"`
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -f  $cont_list'`
 
-or
+OR 
 
-SSH onto Rebuild-DNDC container and enter: `rebuildm -f $cont_list`
+SSH onto Rebuild-DNDC container 
 
+`rebuildm -b container01 container02 container03`
+
+`rebuildm -f container01 container02 container03`
+
+`rebuildm -b $cont_list`
+
+`rebuildm -f $cont_list`
 
 * Replace containerXX with the actual containers you want to create (case-sensitive).
 * Manual run is not limited to containers dependent on master container network. As long as the docker template for that container exists, it will create the container.
@@ -108,7 +115,7 @@ SSH onto Rebuild-DNDC container and enter: `rebuildm -f $cont_list`
 
 ## Recommended VPN container
 
-You can use any VPN image you want but the following is recommended and ruTorrent port forwarding with RDNDC is supported with the following image only!
+You can use any VPN image you want but the following is recommended and ruTorrent port forwarding with RDNDC is supported with the following image (PIA only!)
 
 [qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) [Supports PIA, Mullvad & Windscribe (coming soon) ]
 
