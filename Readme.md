@@ -14,7 +14,13 @@ Re-create containers that use another container's network stack (e.g. routing co
 
 ![image](https://user-images.githubusercontent.com/22656503/68093132-3b93e180-fe8a-11e9-8ab8-06934fad3358.png)
 
-Note: Step 2 & 4 replaces the use of `--net=container:master_container_name` in extra parameters & are required to work on unRAID 6.8.0-rcx & subsequent releases.
+**OR** 
+
+Alternate steps
+
+2. Edit a container you want to add to the master container network stack, 
+3. Add `--net=container:master_container_name` in extra parameters and 
+4. click 'apply' 
 
 ## Docker
 
@@ -22,7 +28,7 @@ Note: Step 2 & 4 replaces the use of `--net=container:master_container_name` in 
 
 1. Open the 'Apps' tab and 
 2. Search for 'rebuild-dndc' 
-3. Click on the Download button
+3. Click on the Install button
 
 ![ca](https://i.imgur.com/kpNEgGw.png)
 
@@ -55,21 +61,63 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-v /config/rebuild-dndc` | Contains container monitor list. |
 | `-e TZ=Europe/London` | Specify a timezone to use e.g. Europe/London |
 
+### - Additional Optional Parameters
+
+| Parameter | Function |
+| :----: | --- |
+| `-e cont_list=ContainerA ContainerB` | Specify a list of containers that you can manually rebuild on demand using the rebuildm -b & rebuildm -f commands ([see below](https://github.com/elmerfdz/unRAIDscripts#--create-dependent-containers-manually)). Container names are case sensitive & leave space between each container name.  |
+
+### - Port Forwarding Optional Parameters
+
+#### Supported Apps
+* ruTorrent
+
+#### Requirements
+* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) (Supports PIA, Mullvad & Windscribe (coming soon) )
+
+| Parameter | Function |
+| :----: | --- |
+| `-e rutorrent_cont_name=ruTorrent` | ruTorrent container name (case sensitive) |
+| `-e rutorrent_pf=yes` | Enable ruTorrent Port Forwarding |
+| `-v /app/pf/rutorrent/` | Path to ruTorrent `rtorrent.rc` or `.rtorrent.rc` file without specifying file name |
+
 ### - Create dependent containers manually
+
 If for some reason master container dependent containers have failed to be **created**, you can start several containers using a single command, which is far more convenient than doing it through the unRAID GUI.
 
-`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -b container01 container02 container03"`
+Interactive Shell
 
-OR
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -b container01 container02 container03'`
 
-`docker exec Rebuild-DNDC /bin/sh -c "rebuildm -f container01 container02 container03"`
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -f container01 container02 container03'`
 
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -b  $cont_list'`
+
+`docker exec -it Rebuild-DNDC bash -c 'rebuildm -f  $cont_list'`
+
+OR 
+
+SSH onto Rebuild-DNDC container 
+
+`rebuildm -b container01 container02 container03`
+
+`rebuildm -f container01 container02 container03`
+
+`rebuildm -b $cont_list`
+
+`rebuildm -f $cont_list`
 
 * Replace containerXX with the actual containers you want to create (case-sensitive).
 * Manual run is not limited to containers dependent on master container network. As long as the docker template for that container exists, it will create the container.
-* -b : Attempts a container rebuild only, if that container already exists, rebuild will be skipped.
-* -f : Stop/remove and rebuild containers if it exists or not.
+* `-b` : Attempts a container rebuild only, if that container already exists, rebuild will be skipped.
+* `-f` : Stop/remove and rebuild containers if it exists or not.
+* `$cont_list` : List of containers that need to rebuild.
 
+## Recommended VPN container
+
+You can use any VPN image you want but the following is recommended and ruTorrent port forwarding with RDNDC is supported with the following image (PIA only!)
+
+[qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) [Supports PIA, Mullvad & Windscribe (coming soon) ]
 
 ### Credits
 
