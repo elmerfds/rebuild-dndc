@@ -1,0 +1,32 @@
+name: Docker Build Master
+
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
+      run: |
+         docker login -u $DOCKER_USER -p $DOCKER_PWD
+    - uses: rlespinasse/github-slug-action@master
+    - name: Print slug variables
+      run: |
+        echo ${{ env.GITHUB_REF_SLUG }}
+        echo ${{ env.GITHUB_SHA_SHORT }}
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile -t eafxx/rebuild-dndc:unraid-m
+        docker build . --file Dockerfile -t eafxx/rebuild-dndc:unraid-m-${{ env.GITHUB_SHA_SHORT }}
+    - name: Docker Push
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PWD: ${{ secrets.DOCKER_PWD }}      
+      run: |
+        docker push eafxx/rebuild-dndc:unraid-m
+        docker push eafxx/rebuild-dndc:unraid-m-${{ env.GITHUB_SHA_SHORT }}
