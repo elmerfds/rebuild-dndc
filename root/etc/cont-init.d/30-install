@@ -2,9 +2,21 @@
 chmod +x /app/Rebuild-DNDC/*
 cp /app/Rebuild-DNDC/rebuild /bin
 cp /app/Rebuild-DNDC/rebuildm /bin
-echo "-- Rebuild-DNDC Config"
+
+printf "
+----------------------------------------------------
+
+██████╗ ██████╗ ███╗   ██╗██████╗  ██████╗
+██╔══██╗██╔══██╗████╗  ██║██╔══██╗██╔════╝
+██████╔╝██║  ██║██╔██╗ ██║██║  ██║██║
+██╔══██╗██║  ██║██║╚██╗██║██║  ██║██║
+██║  ██║██████╔╝██║ ╚████║██████╔╝╚██████╗
+
+Author: https://github.com/elmerfdz
+Support: https://github.com/elmerfdz/unRAIDscripts
+----------------------------------------------------"
 echo
-echo '[---------- VARIABLES CHECK ----------]'
+echo '[------------------ CONFIG CHECK ------------------]'
 echo
 #[---------- DISCORD WEBHOOK ----------]
 if [ -z "$discord_url" ]
