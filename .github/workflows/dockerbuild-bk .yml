@@ -30,3 +30,9 @@ jobs:
       run: |
         docker push eafxx/rebuild-dndc:unraid-bk
         docker push eafxx/rebuild-dndc:unraid-bk-${{ env.GITHUB_SHA_SHORT }}
+    - name: Docker Hub Description
+      uses: peter-evans/dockerhub-description@v2.1.0
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USER }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PWD }}
+        DOCKERHUB_REPOSITORY: eafxx/rebuild-dndc
