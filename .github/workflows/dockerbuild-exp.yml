@@ -22,11 +22,9 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . --file Dockerfile -t eafxx/rebuild-dndc:unraid-e
-        docker build . --file Dockerfile -t eafxx/rebuild-dndc:unraid-e-${{ env.GITHUB_SHA_SHORT }}
     - name: Docker Push
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PWD: ${{ secrets.DOCKER_PWD }}      
       run: |
         docker push eafxx/rebuild-dndc:unraid-e
-        docker push eafxx/rebuild-dndc:unraid-e-${{ env.GITHUB_SHA_SHORT }}
