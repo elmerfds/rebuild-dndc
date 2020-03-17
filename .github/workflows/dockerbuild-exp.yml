@@ -1,7 +1,8 @@
 name: Docker Build Exp
-
 on:
   push:
+    paths-ignore:
+      - 'README.md'  
     branches: [ exp ]
 jobs:
   build:
