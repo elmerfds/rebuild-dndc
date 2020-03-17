@@ -1,7 +1,8 @@
 name: Docker Build BK
-
 on:
   push:
+    paths-ignore:
+      - 'README.md'  
     branches: [ bk ]
 jobs:
   build:
