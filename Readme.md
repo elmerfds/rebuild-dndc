@@ -28,9 +28,9 @@ Alternate steps
 
 | Tag      | Description                          | Build Status                                                                                                | 
 | ---------|--------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| unraid-m | Unraid master/stable                 | ![Docker Build Master](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Master/badge.svg)  | 
-| unraid-d | Unraid development, pre-release      | ![Docker Build Dev](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Dev/badge.svg)     |
-| unraid-e | Unraid unstable, experimental        | ![Docker Build Exp](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Exp/badge.svg)     | 
+| unraid-m | Unraid master/stable                 | ![Build Master](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Master/badge.svg)  | 
+| unraid-d | Unraid development, pre-release      | ![Build Dev](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Dev/badge.svg)     |
+| unraid-e | Unraid unstable, experimental        | ![Build Exp](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Exp/badge.svg)     | 
 
 **Community Applications (unRAID) - recommended** 
 
