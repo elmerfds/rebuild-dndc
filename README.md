@@ -2,8 +2,9 @@
 Re-create containers that use another container's network stack (e.g. routing container traffic through a VPN container).
 
 * RDNDC will monitor the master container during container re-creation/updates/reboots/host reboots and rebuilds dependent containers using the master container's network stack.
-* Only supported on unRAID at the moment.
 * Any containers using the master container network stack will be auto added to the watch list. 
+* Monitor master container's WAN connectivity, reboots master container if network is down.
+* Only supported on unRAID at the moment.
 
 ## Prerequisites
 1. Make sure the master container (e.g. vpn container) is up & running as expected.
