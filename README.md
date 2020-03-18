@@ -1,7 +1,7 @@
-# Rebuild-DNDC
+# [eafxx/rebuild-dndc](https://hub.docker.com/r/eafxx/rebuild-dndc)
 Re-create containers that use another container's network stack (e.g. routing container traffic through a VPN container).
 
-* RDNDC will monitor the master container during updates, reboots or after host reboots and rebuild dependent containers.
+* RDNDC will monitor the master container during container re-creation/updates/reboots/host reboots and rebuilds dependent containers using the master container's network stack.
 * Only supported on unRAID at the moment.
 * Any containers using the master container network stack will be auto added to the watch list. 
 
