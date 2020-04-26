@@ -1,9 +1,10 @@
-# Rebuild-DNDC
+# [eafxx/rebuild-dndc](https://hub.docker.com/r/eafxx/rebuild-dndc)
 Re-create containers that use another container's network stack (e.g. routing container traffic through a VPN container).
 
-* RDNDC will monitor the master container during updates, reboots or after host reboots and rebuild dependent containers.
-* Only supported on unRAID at the moment.
+* RDNDC will monitor the master container during container re-creation/updates/reboots/host reboots and rebuilds dependent containers using the master container's network stack.
 * Any containers using the master container network stack will be auto added to the watch list. 
+* Monitor master container's WAN connectivity, reboots master container if network is down.
+* Only supported on unRAID at the moment.
 
 ## Prerequisites
 1. Make sure the master container (e.g. vpn container) is up & running as expected.
@@ -28,9 +29,9 @@ Alternate steps
 
 | Tag      | Description                          | Build Status                                                                                                | 
 | ---------|--------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| unraid-m | Unraid master/stable                 | ![Build Master](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Master/badge.svg)  | 
-| unraid-d | Unraid development, pre-release      | ![Build Dev](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Dev/badge.svg)     |
-| unraid-e | Unraid unstable, experimental        | ![Build Exp](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Exp/badge.svg)     | 
+| unraid-m | Unraid stable                 | ![Docker Build Master](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Master/badge.svg)  | 
+| unraid-d | Unraid development, pre-release      | ![Docker Build Dev](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Dev/badge.svg)     |
+| unraid-e | Unraid  experimental, unstable        | ![Docker Build Exp](https://github.com/elmerfdz/unRAIDscripts/workflows/Docker%20Build%20Exp/badge.svg)     | 
 
 **Community Applications (unRAID) - recommended** 
 
