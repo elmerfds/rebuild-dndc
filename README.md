@@ -83,7 +83,7 @@ Container images are configured using parameters passed at runtime (such as thos
 * ruTorrent
 
 #### Requirements
-* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/gluetun) (Supports PIA, Mullvad & Windscribe (coming soon) )
+* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/gluetun) (Supports PIA, Mullvad, Windscribe and others)
 
 | Parameter | Function |
 | :----: | --- |
