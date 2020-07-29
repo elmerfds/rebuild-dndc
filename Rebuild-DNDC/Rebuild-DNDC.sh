@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.7-u
+ver=3.9.8-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -248,12 +248,12 @@ get_pf_mod()
         then
            vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
         else
-            echo "Port Foward file is empty "
+            echo "- Port Foward file is empty "
             vpn_pf=0
         fi
     elif [ "$check_pff_exists" == "1" ]
     then
-         echo "Port file doesn't exist, will attempt to restart $mastercontname container"
+         echo "- Port file doesn't exist, will attempt to restart $mastercontname container"
          vpn_pf=0
     fi
 }
@@ -269,8 +269,8 @@ app_pf()
         get_pf_mod
         while [ "$vpn_pf" == "0" ]
         do 
-            printf " - Seems like $mastercontname container has failed to port forward, attempting to fix.\n"
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Seems like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            printf " - Looks like $mastercontname container has failed to port forward, attempting to fix.\n"
+            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
             unset list_inscope_cont_ids
             unset list_inscope_contnames
             unset list_inscope_cont_tmpl
@@ -282,7 +282,7 @@ app_pf()
             get_pf_mod
             if [ "$vpn_pf" != "0" ] 
             then
-                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Seems like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Looks like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
                 startapp_mod
                 break
             fi    
