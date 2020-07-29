@@ -75,6 +75,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | Parameter | Function |
 | :----: | --- |
 | `-e cont_list=ContainerA ContainerB` | Specify a list of containers that you can manually rebuild on demand using the rebuildm -b & rebuildm -f commands ([see below](https://github.com/elmerfdz/unRAIDscripts#--create-dependent-containers-manually)). Container names are case sensitive & leave space between each container name.  |
+| `-e save_no_masterids=20` | Default set to 20, number of master container IDs to save, which helps in auto-detecting in-scope containers during master container connection issues    |
 
 ### - Port Forwarding Optional Parameters
 
