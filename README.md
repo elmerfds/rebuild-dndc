@@ -75,7 +75,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | Parameter | Function |
 | :----: | --- |
 | `-e cont_list=ContainerA ContainerB` | Specify a list of containers that you can manually rebuild on demand using the rebuildm -b & rebuildm -f commands ([see below](https://github.com/elmerfdz/unRAIDscripts#--create-dependent-containers-manually)). Container names are case sensitive & leave space between each container name.  |
-| `-e save_no_masterids=20` | Default set to 20, number of master container IDs to save, which helps in auto-detecting in-scope containers during master container connection issues    |
+| `-e save_no_mcontids=20` | Default set to 20, number of master container IDs to save, which helps in auto-detecting in-scope containers during master container connection issues    |
 
 ### - Port Forwarding Optional Parameters
 
@@ -83,7 +83,7 @@ Container images are configured using parameters passed at runtime (such as thos
 * ruTorrent
 
 #### Requirements
-* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) (Supports PIA, Mullvad & Windscribe (coming soon) )
+* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/gluetun) (Supports PIA, Mullvad & Windscribe (coming soon) )
 
 | Parameter | Function |
 | :----: | --- |
@@ -127,7 +127,7 @@ SSH onto Rebuild-DNDC container
 
 You can use any VPN image you want but the following is recommended and ruTorrent port forwarding with RDNDC is supported with the following image (PIA only!)
 
-[qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) [Supports PIA, Mullvad & Windscribe (coming soon) ]
+[qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) [Supports PIA, Mullvad, Windscribe and others ]
 
 ### Credits
 

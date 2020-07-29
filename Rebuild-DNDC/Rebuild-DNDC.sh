@@ -30,7 +30,7 @@ mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
-save_no_masterids=${save_no_masterids:-20}
+save_no_mcontids=${save_no_mcontids:-20}
 
 
 
@@ -345,7 +345,7 @@ masteridpool_mod()
 if ! grep -Fxq "$mastercontid" $mastercontepfile_loc/allmastercontid.tmp
 then
     echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
-    tail -n $save_no_masterids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
+    tail -n $save_no_mcontids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
 fi
 }
 
