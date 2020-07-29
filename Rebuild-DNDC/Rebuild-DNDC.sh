@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.6-u
+ver=3.9.7-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -240,7 +240,22 @@ rebuild_mod()
 #Port Forwarding For Supported Apps
 get_pf_mod()
 {
-    vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+    check_pff_exists=$(docker exec $mastercontname /bin/sh -c "[[ -f /forwarded_port ]]" ; echo $?)
+    if [ "$check_pff_exists" == "0" ]
+    then
+        check_pf_num_exists=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port" ; echo $?)
+        if [ "$check_pff_exists" == "0" ]
+        then
+           vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        else
+            echo "Port Foward file is empty "
+            vpn_pf=0
+        fi
+    elif [ "$check_pff_exists" == "1" ]
+    then
+         echo "Port file doesn't exist, will attempt to restart $mastercontname container"
+         vpn_pf=0
+    fi
 }
 
 app_pf()
