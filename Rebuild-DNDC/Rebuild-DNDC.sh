@@ -322,7 +322,7 @@ app_pf()
             if [ "$rutorrent_ip_status" == "1" ]
             then               
                 sed -i "s/^ip.*/ip = $vpn_wanip/" $rutorrent_rc_loc
-                printf " - Tracker Reported IP: Replaced IP with $vpn_wanip\n"
+                printf " - REPORTED WAN IP: Replaced IP with $vpn_wanip\n"
             fi
             printf " - BREAK: Quick 5sec nap before restarting $rutorrent_cont_name\n"
             sleep 5
