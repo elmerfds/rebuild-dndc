@@ -310,8 +310,8 @@ app_pf()
         done     
         rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))  
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
-        rutorrent_ip_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)        
-        if [ "$rutorrent_pf_status" == "1" ] && [ "$rutorrent_ip_status" == "1" ]
+        rutorrent_ip_status=$(grep -q "port_range = $vpn_wanip-$vpn_wanip" "$rutorrent_rc_loc" ; echo $?)        
+        if [ "$rutorrent_pf_status" == "1" ] || [ "$rutorrent_ip_status" == "1" ]
         then
             if [ "$rutorrent_pf_status" == "1" ]
             then
