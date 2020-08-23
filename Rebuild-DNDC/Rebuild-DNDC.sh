@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.9-u
+ver=4.0.0-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -258,6 +258,25 @@ get_pf_mod()
          vpn_pf=0
     fi
 }
+get_vpnwanip_mod()
+{
+    check_vpnwanipf_exists=$(docker exec $mastercontname /bin/sh -c "[[ -f /tmp/gluetun/ip ]]" ; echo $?)
+    if [ "$check_vpnwanipf_exists" == "0" ]
+    then
+        check_pf_num_exists=$(docker exec $mastercontname /bin/sh -c "cat /tmp/gluetun/ip" ; echo $?)
+        if [ "$check_vpnwanipf_exists" == "0" ]
+        then
+           vpn_wanip=$(docker exec $mastercontname /bin/sh -c "cat /tmp/gluetun/ip")
+        else
+            echo "- WAN IP file is empty "
+            vpn_wanip=0
+        fi
+    elif [ "$check_vpnwanipf_exists" == "1" ]
+    then
+         echo "- WAN IP file doesn't exist, will attempt to restart $mastercontname container"
+         vpn_wanip=0
+    fi
+}
 
 app_pf()
 {
@@ -268,7 +287,8 @@ app_pf()
     then
         printf ' ruTorrent\n'         
         get_pf_mod
-        while [ "$vpn_pf" == "0" ]
+        get_vpnwanip_mod
+        while [ "$vpn_pf" == "0" ] || [ "$vpn_wanip" == "0" ]
         do 
             printf " - Looks like $mastercontname container has failed to port forward, attempting to fix.\n"
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
@@ -288,15 +308,22 @@ app_pf()
                 break
             fi    
         done     
-        rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
+        rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))  
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
-        get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
-        if [ "$rutorrent_pf_status" == "1" ] 
+        rutorrent_ip_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)        
+        if [ "$rutorrent_pf_status" == "1" ] || [ "$rutorrent_ip_status" == "1" ]
         then
-            sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
-            sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
-            sed -i "s/^ip.*/ip = $get_vpn_wan_ip/" $rutorrent_rc_loc
-            printf " - PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n"
+            if [ "$rutorrent_pf_status" == "1" ]
+            then
+                sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
+                sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
+                printf " - PORT-FORWARD: Replaced rTorrent Bittorrent port-range with $vpn_pf\n"
+            fi 
+            if [ "$rutorrent_ip_status" == "1" ]
+            then               
+                sed -i "s/^ip.*/ip = $vpn_wanip/" $rutorrent_rc_loc
+                printf " - Tracker Reported IP: Replaced IP reported to trackers with $vpn_wanip\n"
+            fi
             printf " - BREAK: Quick 5sec nap before restarting $rutorrent_cont_name\n"
             sleep 5
             docker restart $rutorrent_cont_name  &> /dev/null
@@ -308,6 +335,7 @@ app_pf()
         elif [ "$rutorrent_pf_status" == "0" ]
         then
             printf " - PORT-FORWARD STATUS: Current ($vpn_pf)\n"
+            printf " - PORT-FORWARD STATUS: Current ($vpn_wanip)\n"            
             printf " - SKIPPING\n"                 
         fi
     fi
