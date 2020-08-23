@@ -310,7 +310,7 @@ app_pf()
         done     
         rutorrent_rc_loc=$(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc")
         rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
-        rutorrent_ip_status=$(grep -q "port_range = $vpn_wanip-$vpn_wanip" "$rutorrent_rc_loc" ; echo $?)        
+        rutorrent_ip_status=$(grep -q "ip = $vpn_wanip" "$rutorrent_rc_loc" ; echo $?)        
         if [ "$rutorrent_pf_status" == "1" ] || [ "$rutorrent_ip_status" == "1" ]
         then
             if [ "$rutorrent_pf_status" == "1" ]
@@ -335,7 +335,7 @@ app_pf()
                     ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced Bittorrent port-range with $vpn_pf\n- Reported WAN IP: Replaced WAN IP with $vpn_wanip\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
                 elif [ "$rutorrent_ip_status" == "1" ]
                 then
-                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Reported WAN IP: Replaced WAN IP with $vpn_wanip\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Reported WAN IP: Replaced with $vpn_wanip\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
                 elif [ "$rutorrent_pf_status" == "1" ]
                 then
                     ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
