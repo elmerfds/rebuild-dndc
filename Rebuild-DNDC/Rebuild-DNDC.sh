@@ -288,7 +288,7 @@ app_pf()
         printf ' ruTorrent\n'         
         get_pf_mod
         get_vpnwanip_mod
-        while [ "$vpn_pf" == "0" ] && [ "$vpn_wanip" == "0" ]
+        while [ "$vpn_pf" == "0" ] || [ "$vpn_wanip" == "0" ]
         do 
             printf " - Looks like $mastercontname container has failed to port forward, attempting to fix.\n"
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
