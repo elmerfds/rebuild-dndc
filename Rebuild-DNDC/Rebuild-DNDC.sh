@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.0-u
+ver=4.0.1-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -266,7 +266,7 @@ get_vpnwanip_mod()
         check_pf_num_exists=$(docker exec $mastercontname /bin/sh -c "cat /tmp/gluetun/ip" ; echo $?)
         if [ "$check_vpnwanipf_exists" == "0" ]
         then
-           vpn_wanip=$(docker exec $mastercontname /bin/sh -c "cat /tmp/gluetun/ip")
+           vpn_wanip=$(docker exec $mastercontname /bin/sh -c  "wget http://ipinfo.io/ip -qO -")
         else
             echo "- WAN IP file is empty "
             vpn_wanip=0
