@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.2-u
+ver=4.0.3-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -350,7 +350,7 @@ app_pf()
                     ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
                 fi                     
             fi
-        elif [ "$rutorrent_pf_status" == "0" ] || [ "$rutorrent_ip_status" == "0" ]
+        elif [ "$rutorrent_pf_status" != "1" ] || [ "$rutorrent_ip_status" != "1" ]
         then
             printf " - PORT-FORWARD STATUS: Current ($vpn_pf)\n"
             printf " - REPORTED WAN IP STATUS: Current ($vpn_wanip)\n"            
