@@ -6,7 +6,7 @@ ver=4.0.6-u
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
 if [ -f "$PIDFILE" ]; then
-	PIDlife=$(find "$PIDFILE" -type f -mmin 1 | grep . > /dev/null 2>&1 ; echo $?)
+	PIDlife=$(find "$PIDFILE" -type f -mmin +5 | grep . > /dev/null 2>&1 ; echo $?)
 	if [ "${PIDlife}" == '0' ]
 	then
 		echo
