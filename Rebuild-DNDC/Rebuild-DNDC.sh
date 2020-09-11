@@ -1,11 +1,18 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.3-u
+ver=4.0.4-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
 if [ -f ${PIDFILE} ]; then
+	PIDlife=$(find $PIDFILE -type f -mmin +5 | grep . > /dev/null 2>&1 ; echo $?)
+	if [ "${PIDlife}" == '0' ]
+	then
+		echo
+		echo "healing..."
+    	rm -rf $PIDFILE
+	fi
    #verify if the process is actually still running under this pid
    OLDPID=`cat ${PIDFILE}`
    RESULT=`ps -ef | grep ${OLDPID} | grep ${SCRIPTNAME}`
