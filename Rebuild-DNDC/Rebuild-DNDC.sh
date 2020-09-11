@@ -1,10 +1,22 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.3-u
+ver=4.0.6-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
+if [ -f "$PIDFILE" ]; then
+	PIDlife=$(find "$PIDFILE" -type f -mmin +5 | grep . > /dev/null 2>&1 ; echo $?)
+	if [ "${PIDlife}" == '0' ]
+	then
+		echo
+		echo "Healing..."
+    		rm -rf $PIDFILE
+	else
+		echo
+		echo "App healthy..."
+	fi
+fi
 if [ -f ${PIDFILE} ]; then
    #verify if the process is actually still running under this pid
    OLDPID=`cat ${PIDFILE}`
@@ -12,7 +24,6 @@ if [ -f ${PIDFILE} ]; then
    if [ -n "${RESULT}" ]; then
      echo
      echo "Script already running! Try again later."
-     echo "If this persists, restart container"
      echo
      exit 255
    fi
@@ -20,7 +31,6 @@ fi
 #grab pid of this process and update the pid file with it
 PID=`ps -ef | grep ${SCRIPTNAME} | head -n1 |  awk ' {print $2;} '`
 echo ${PID} > ${PIDFILE}
-
 #NON-CONFIGURABLE VARS
 contname=''
 templatename=''
@@ -358,6 +368,7 @@ app_pf()
         fi
     fi
 }
+
 
 #Check Master Container WAN connectivity
 mastercontconnectivity_mod()
