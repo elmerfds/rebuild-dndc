@@ -116,7 +116,7 @@ fi
 if [ -z "$cont_list" ]
 then
   echo "- No containers set for manual run"
-  $cont_list='none'
+  cont_list='none'
 else
   echo "- List of containers to build on manual run: $cont_list"
 fi
