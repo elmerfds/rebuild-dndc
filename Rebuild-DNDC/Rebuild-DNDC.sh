@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.6-u
+ver=4.0.7-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -59,7 +59,7 @@ recreatecont_notify_complete()
     fi
     if [ "$gotify_notifications" == "yes" ]
     then        
-        curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=REBUILD - Completed! 
+        curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - Completed! 
         - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
     fi    
 }
@@ -80,7 +80,7 @@ recreatecont_notify()
         fi
         if [ "$gotify_notifications" == "yes" ]
         then          
-            curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
             - $mastercontname container EndpointID doesn't match!" -F "priority=5" &> /dev/null
         fi        
     elif [ "$contnetmode" != "$mastercontid" ]
@@ -96,7 +96,7 @@ recreatecont_notify()
         fi
         if [ "$gotify_notifications" == "yes" ]
         then          
-            curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
             - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
         fi        
     fi 
@@ -121,7 +121,7 @@ first_run()
         fi
         if [ "$gotify_notifications" == "yes" ]
         then        
-            curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=FIRST-RUN
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=FIRST-RUN
             - Setup Complete" -F "priority=5" &> /dev/null
         fi        
         was_run=1
@@ -336,7 +336,7 @@ app_pf()
             fi
             if [ "$gotify_notifications" == "yes" ]
             then        
-                curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=Attempting To Fix Port Forwarding
+                curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Attempting To Fix Port Forwarding
                 - Looks like the $mastercontname container was unable to port foward, attempting to fix
                 - Restarting $mastercontname container" -F "priority=5" &> /dev/null
             fi                
@@ -357,7 +357,7 @@ app_pf()
                 fi
                 if [ "$gotify_notifications" == "yes" ]
                 then        
-                    curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=Port Forwarding Fixed
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Port Forwarding Fixed
                     - Looks like $mastercontname container has succeeded in port forwarding
                     - Forwarded Port: $vpn_pf" -F "priority=5" &> /dev/null
                 fi                    
@@ -402,18 +402,18 @@ app_pf()
             then
                 if [ "$rutorrent_pf_status" == "1" ] && [ "$rutorrent_ip_status" == "1" ]
                 then
-                    curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
                     - Port-Forward: Replaced Bittorrent port-range with $vpn_pf
                     - Reported WAN IP: Replaced WAN IP with $vpn_wanip
                     - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
                 elif [ "$rutorrent_ip_status" == "1" ]
                 then
-                    curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
                     - Reported WAN IP: Replaced with $vpn_wanip
                     - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
                 elif [ "$rutorrent_pf_status" == "1" ]
                 then
-                    curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
                     - Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf
                     - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
                 fi                     

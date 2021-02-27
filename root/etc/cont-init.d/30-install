@@ -147,7 +147,7 @@ fi
 #[---------- VARIABLES IN USE GOTIFY NOTIFICATION ----------]
 if [ "$gotify_notifications" == "yes" ]
 then
-  curl -X POST "$gotify_msgurl_tkn" -F "title=Rebuild-dndc" -F "message=Variables In Use
+  curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Variables In Use
   - Master Container Name:- $mastercontname
   - Master Cont Con Check:- $mastercontconcheck
   - Ping IP:- $ping_ip

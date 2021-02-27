@@ -16,7 +16,7 @@ ENV app_dir="/app/Rebuild-DNDC" \
     pf_loc=/app/pf \
     TZ= \
     cont_list= \
-    gotify_msgurl_tkn= 
+    gotify_url= 
 
 # Add local files
 COPY Rebuild-DNDC/ /app/Rebuild-DNDC
