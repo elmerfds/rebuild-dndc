@@ -1,7 +1,7 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=4.0.6-u
+ver=4.0.7-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
@@ -57,6 +57,11 @@ recreatecont_notify_complete()
     then        
         ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - Completed!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
     fi
+    if [ "$gotify_notifications" == "yes" ]
+    then        
+        curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - Completed! 
+        - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
+    fi    
 }
 
 #NOTIFICATIONS - Recreate Notify
@@ -73,6 +78,11 @@ recreatecont_notify()
         then          
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress..." --description "- $mastercontname container EndpointID doesn't match!" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then          
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            - $mastercontname container EndpointID doesn't match!" -F "priority=5" &> /dev/null
+        fi        
     elif [ "$contnetmode" != "$mastercontid" ]
     then
         printf "  - REBUILDING: ${recreatecont_notify_complete_msg[*]}\n"
@@ -84,6 +94,11 @@ recreatecont_notify()
         then            
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress..." --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then          
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
+        fi        
     fi 
 }
 
@@ -104,6 +119,11 @@ first_run()
         then        
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "FIRST-RUN" --description "- Setup Complete" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then        
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=FIRST-RUN
+            - Setup Complete" -F "priority=5" &> /dev/null
+        fi        
         was_run=1
     elif [ -d "$mastercontepfile_loc" ] && [ -e "$mastercontepfile_loc/mastercontepid.tmp" ] 
     then
@@ -310,7 +330,16 @@ app_pf()
         while [ "$vpn_pf" == "0" ] || [ "$vpn_wanip" == "0" ]
         do 
             printf " - Looks like $mastercontname container has failed to port forward, attempting to fix.\n"
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            if [ "$discord_notifications" == "yes" ]
+            then
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            fi
+            if [ "$gotify_notifications" == "yes" ]
+            then        
+                curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Attempting To Fix Port Forwarding
+                - Looks like the $mastercontname container was unable to port foward, attempting to fix
+                - Restarting $mastercontname container" -F "priority=5" &> /dev/null
+            fi                
             unset list_inscope_cont_ids
             unset list_inscope_contnames
             unset list_inscope_cont_tmpl
@@ -322,7 +351,16 @@ app_pf()
             get_pf_mod
             if [ "$vpn_pf" != "0" ] 
             then
-                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Looks like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                if [ "$discord_notifications" == "yes" ]
+                then 
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Looks like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                fi
+                if [ "$gotify_notifications" == "yes" ]
+                then        
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Port Forwarding Fixed
+                    - Looks like $mastercontname container has succeeded in port forwarding
+                    - Forwarded Port: $vpn_pf" -F "priority=5" &> /dev/null
+                fi                    
                 startapp_mod
                 break
             fi    
@@ -360,6 +398,27 @@ app_pf()
                     ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
                 fi                     
             fi
+            if [ "$gotify_notifications" == "yes" ]
+            then
+                if [ "$rutorrent_pf_status" == "1" ] && [ "$rutorrent_ip_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Port-Forward: Replaced Bittorrent port-range with $vpn_pf
+                    - Reported WAN IP: Replaced WAN IP with $vpn_wanip
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                elif [ "$rutorrent_ip_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Reported WAN IP: Replaced with $vpn_wanip
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                elif [ "$rutorrent_pf_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                fi                     
+            fi            
+            
         elif [ "$rutorrent_pf_status" != "1" ] || [ "$rutorrent_ip_status" != "1" ]
         then
             printf " - PORT-FORWARD STATUS: Current ($vpn_pf)\n"
