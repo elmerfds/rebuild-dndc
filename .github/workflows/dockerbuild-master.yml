@@ -2,8 +2,11 @@ name: Docker Build Master
 on:
   push:
     paths-ignore:
-      - 'README.md'  
-    branches: [ master ]
+      - 'README.md'
+      - '.github/workflows/*'        
+    branches: 
+      - master
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest

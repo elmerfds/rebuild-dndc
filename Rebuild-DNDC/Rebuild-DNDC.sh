@@ -1,10 +1,22 @@
 #!/bin/bash
 #Rebuild-DNDC
 #author: https://github.com/elmerfdz
-ver=3.9.6-u
+ver=4.0.7-u
 #Run only one instance of script
 SCRIPTNAME=`basename $0`
 PIDFILE=/var/run/${SCRIPTNAME}.pid
+if [ -f "$PIDFILE" ]; then
+	PIDlife=$(find "$PIDFILE" -type f -mmin +5 | grep . > /dev/null 2>&1 ; echo $?)
+	if [ "${PIDlife}" == '0' ]
+	then
+		echo
+		echo "Healing..."
+    		rm -rf $PIDFILE
+	else
+		echo
+		echo "App healthy..."
+	fi
+fi
 if [ -f ${PIDFILE} ]; then
    #verify if the process is actually still running under this pid
    OLDPID=`cat ${PIDFILE}`
@@ -12,7 +24,6 @@ if [ -f ${PIDFILE} ]; then
    if [ -n "${RESULT}" ]; then
      echo
      echo "Script already running! Try again later."
-     echo "If this persists, restart container"
      echo
      exit 255
    fi
@@ -20,7 +31,6 @@ fi
 #grab pid of this process and update the pid file with it
 PID=`ps -ef | grep ${SCRIPTNAME} | head -n1 |  awk ' {print $2;} '`
 echo ${PID} > ${PIDFILE}
-
 #NON-CONFIGURABLE VARS
 contname=''
 templatename=''
@@ -30,6 +40,7 @@ mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
 getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
+save_no_mcontids=${save_no_mcontids:-20}
 
 
 
@@ -46,6 +57,11 @@ recreatecont_notify_complete()
     then        
         ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - Completed!" --description "- ${recreatecont_notify_complete_msg[*]}" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
     fi
+    if [ "$gotify_notifications" == "yes" ]
+    then        
+        curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - Completed! 
+        - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
+    fi    
 }
 
 #NOTIFICATIONS - Recreate Notify
@@ -62,6 +78,11 @@ recreatecont_notify()
         then          
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress..." --description "- $mastercontname container EndpointID doesn't match!" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then          
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            - $mastercontname container EndpointID doesn't match!" -F "priority=5" &> /dev/null
+        fi        
     elif [ "$contnetmode" != "$mastercontid" ]
     then
         printf "  - REBUILDING: ${recreatecont_notify_complete_msg[*]}\n"
@@ -73,6 +94,11 @@ recreatecont_notify()
         then            
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "REBUILD - In Progress..." --description "- ${recreatecont_notify_complete_msg[*]}" --color "0xe68a00" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then          
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=REBUILD - In Progress...
+            - ${recreatecont_notify_complete_msg[*]}" -F "priority=5" &> /dev/null
+        fi        
     fi 
 }
 
@@ -93,6 +119,11 @@ first_run()
         then        
             ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "FIRST-RUN" --description "- Setup Complete" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
         fi
+        if [ "$gotify_notifications" == "yes" ]
+        then        
+            curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=FIRST-RUN
+            - Setup Complete" -F "priority=5" &> /dev/null
+        fi        
         was_run=1
     elif [ -d "$mastercontepfile_loc" ] && [ -e "$mastercontepfile_loc/mastercontepid.tmp" ] 
     then
@@ -240,7 +271,50 @@ rebuild_mod()
 #Port Forwarding For Supported Apps
 get_pf_mod()
 {
-    vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+    check_pff_exists=$(docker exec $mastercontname /bin/sh -c "[[ -f /forwarded_port ]]" ; echo $?)
+    if [ "$check_pff_exists" == "0" ]
+    then
+        check_pf_num_exists=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port" ; echo $?)
+        if [ "$check_pff_exists" == "0" ]
+        then
+           vpn_pf=$(docker exec $mastercontname /bin/sh -c "cat /forwarded_port")
+        else
+            echo "- Port Foward file is empty "
+            vpn_pf=0
+        fi
+    elif [ "$check_pff_exists" == "1" ]
+    then
+         echo "- Port file doesn't exist, will attempt to restart $mastercontname container"
+         vpn_pf=0
+    fi
+}
+get_vpnwanip_mod()
+{
+    check_vpnwanipf_exists=$(docker exec $mastercontname /bin/sh -c "[[ -f /tmp/gluetun/ip ]]" ; echo $?)
+    if [ "$check_vpnwanipf_exists" == "0" ]
+    then
+        check_pf_num_exists=$(docker exec $mastercontname /bin/sh -c "cat /tmp/gluetun/ip" ; echo $?)
+        if [ "$check_vpnwanipf_exists" == "0" ]
+        then
+            while true
+            do
+                vpn_wanip_chk1=$(docker exec $mastercontname /bin/sh -c  "curl -s https://ipv4.icanhazip.com")
+                vpn_wanip_chk2=$(docker exec $mastercontname /bin/sh -c  "curl -s https://ipecho.net/plain")
+                if [ "$vpn_wanip_chk1" == "$vpn_wanip_chk2" ]
+                then
+                    vpn_wanip=$vpn_wanip_chk1
+                    break
+                fi
+           done
+        else
+            echo "- WAN IP file is empty "
+            vpn_wanip=0
+        fi
+    elif [ "$check_vpnwanipf_exists" == "1" ]
+    then
+         echo "- WAN IP file doesn't exist, will attempt to restart $mastercontname container"
+         vpn_wanip=0
+    fi
 }
 
 app_pf()
@@ -252,10 +326,20 @@ app_pf()
     then
         printf ' ruTorrent\n'         
         get_pf_mod
-        while [ "$vpn_pf" == "0" ]
+        get_vpnwanip_mod
+        while [ "$vpn_pf" == "0" ] || [ "$vpn_wanip" == "0" ]
         do 
-            printf " - Seems like $mastercontname container has failed to port forward, attempting to fix.\n"
-            ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Seems like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            printf " - Looks like $mastercontname container has failed to port forward, attempting to fix.\n"
+            if [ "$discord_notifications" == "yes" ]
+            then
+                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Attempting To Fix Port Forwarding" --description "- Looks like the $mastercontname container was unable to port foward, attempting to fix.\n- Restarting $mastercontname container" --color "0xb30000" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            fi
+            if [ "$gotify_notifications" == "yes" ]
+            then        
+                curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Attempting To Fix Port Forwarding
+                - Looks like the $mastercontname container was unable to port foward, attempting to fix
+                - Restarting $mastercontname container" -F "priority=5" &> /dev/null
+            fi                
             unset list_inscope_cont_ids
             unset list_inscope_contnames
             unset list_inscope_cont_tmpl
@@ -267,35 +351,83 @@ app_pf()
             get_pf_mod
             if [ "$vpn_pf" != "0" ] 
             then
-                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Seems like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                if [ "$discord_notifications" == "yes" ]
+                then 
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "Port Forwarding Fixed" --description "- Looks like $mastercontname container has succeeded in port forwarding.\n- Forwarded Port: $vpn_pf" --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                fi
+                if [ "$gotify_notifications" == "yes" ]
+                then        
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=Port Forwarding Fixed
+                    - Looks like $mastercontname container has succeeded in port forwarding
+                    - Forwarded Port: $vpn_pf" -F "priority=5" &> /dev/null
+                fi                    
                 startapp_mod
                 break
             fi    
         done     
-        rutorrent_rc_loc=($(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc"))
-        rutorrent_pf_status=$(grep -q "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
-        get_vpn_wan_ip=$(docker exec $mastercontname /bin/sh -c  "wget --timeout=30 http://ipinfo.io/ip -qO -")
-        if [ "$rutorrent_pf_status" == "1" ] 
+        rutorrent_rc_loc=$(find $pf_loc/rutorrent/ -type f -iname "*rtorrent.rc")
+        rutorrent_pf_status=$(grep -w "port_range = $vpn_pf-$vpn_pf" "$rutorrent_rc_loc" ; echo $?)
+        rutorrent_ip_status=$(grep -w "ip = $vpn_wanip" "$rutorrent_rc_loc" ; echo $?)        
+        if [ "$rutorrent_pf_status" == "1" ] || [ "$rutorrent_ip_status" == "1" ]
         then
-            sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
-            sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
-            sed -i "s/^ip.*/ip = $get_vpn_wan_ip/" $rutorrent_rc_loc
-            printf " - PORT-FORWARD: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n"
+            if [ "$rutorrent_pf_status" == "1" ]
+            then
+                sed -i "s/^port_range.*/port_range = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
+                sed -i "s/^network.port_range.set.*/network.port_range.set = $vpn_pf-$vpn_pf/" $rutorrent_rc_loc
+                printf " - PORT-FORWARD: Replaced rTorrent Bittorrent port-range with $vpn_pf\n"
+            fi 
+            if [ "$rutorrent_ip_status" == "1" ]
+            then               
+                sed -i "s/^ip.*/ip = $vpn_wanip/" $rutorrent_rc_loc
+                printf " - REPORTED WAN IP: Replaced IP with $vpn_wanip\n"
+            fi
             printf " - BREAK: Quick 5sec nap before restarting $rutorrent_cont_name\n"
             sleep 5
             docker restart $rutorrent_cont_name  &> /dev/null
             printf " - RESTARTED: $rutorrent_cont_name\n"
             if [ "$discord_notifications" == "yes" ]
-            then        
-                ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Port Forward" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+            then
+                if [ "$rutorrent_pf_status" == "1" ] && [ "$rutorrent_ip_status" == "1" ]
+                then
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced Bittorrent port-range with $vpn_pf\n- Reported WAN IP: Replaced WAN IP with $vpn_wanip\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                elif [ "$rutorrent_ip_status" == "1" ]
+                then
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Reported WAN IP: Replaced with $vpn_wanip\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                elif [ "$rutorrent_pf_status" == "1" ]
+                then
+                    ./discord-notify.sh --webhook-url=$discord_url --username "$discord_username" --avatar "$rdndc_logo" --title "ruTorrent Enhancements" --description "- Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf\n- Restarted $rutorrent_cont_name " --color "0x66ff33" --author-icon "$rdndc_logo" --footer "v$ver" --footer-icon "$rdndc_logo"  &> /dev/null
+                fi                     
             fi
-        elif [ "$rutorrent_pf_status" == "0" ]
+            if [ "$gotify_notifications" == "yes" ]
+            then
+                if [ "$rutorrent_pf_status" == "1" ] && [ "$rutorrent_ip_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Port-Forward: Replaced Bittorrent port-range with $vpn_pf
+                    - Reported WAN IP: Replaced WAN IP with $vpn_wanip
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                elif [ "$rutorrent_ip_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Reported WAN IP: Replaced with $vpn_wanip
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                elif [ "$rutorrent_pf_status" == "1" ]
+                then
+                    curl -X POST "$gotify_url" -F "title=Rebuild-dndc" -F "message=ruTorrent Enhancements 
+                    - Port-Forward: Replaced $rutorrent_cont_name container port-range with $vpn_pf
+                    - Restarted $rutorrent_cont_name" -F "priority=5" &> /dev/null
+                fi                     
+            fi            
+            
+        elif [ "$rutorrent_pf_status" != "1" ] || [ "$rutorrent_ip_status" != "1" ]
         then
             printf " - PORT-FORWARD STATUS: Current ($vpn_pf)\n"
+            printf " - REPORTED WAN IP STATUS: Current ($vpn_wanip)\n"            
             printf " - SKIPPING\n"                 
         fi
     fi
 }
+
 
 #Check Master Container WAN connectivity
 mastercontconnectivity_mod()
@@ -329,7 +461,7 @@ masteridpool_mod()
 if ! grep -Fxq "$mastercontid" $mastercontepfile_loc/allmastercontid.tmp
 then
     echo "$mastercontid" >> $mastercontepfile_loc/allmastercontid.tmp
-    tail -n $save_no_masterids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
+    tail -n $save_no_mcontids $mastercontepfile_loc/allmastercontid.tmp > $mastercontepfile_loc/allmastercontid.tmp1 && mv $mastercontepfile_loc/allmastercontid.tmp1 $mastercontepfile_loc/allmastercontid.tmp
 fi
 }
 

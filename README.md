@@ -64,7 +64,9 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e cron=*/5 * * * *` | Cron schedule set to run every 5mins  - default 5mins|
 | `-e run_startup=yes` | Do a first run immediately without waiting [yes/no] |
 | `-e discord_notifications=yes` | Enable Discord notifications [yes/no] |
+| `-e gotify_notifications=yes` | Enable Gotify notifications [yes/no] |
 | `-e discord_url` | Full Discord webhook URL, only required if notifications are enabled |
+| `-e gotify_url` | Full Gotify server message URL + token, only required if notifications are enabled |
 | `-v /config/docker-templates` | Path to user docker templates on Unraid (read-only) |
 | `-v /var/run/docker.sock` | Docker-daemon socket location |
 | `-v /config/rebuild-dndc` | Contains container monitor list. |
@@ -75,6 +77,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | Parameter | Function |
 | :----: | --- |
 | `-e cont_list=ContainerA ContainerB` | Specify a list of containers that you can manually rebuild on demand using the rebuildm -b & rebuildm -f commands ([see below](https://github.com/elmerfdz/unRAIDscripts#--create-dependent-containers-manually)). Container names are case sensitive & leave space between each container name.  |
+| `-e save_no_mcontids=20` | Default set to 20, maintains a list of last 20 master containerIDs when the container is destroyed or re-created. Makes sure containers using the master container network aren't orphaned and marked for re-creation.  |
 
 ### - Port Forwarding Optional Parameters
 
@@ -82,7 +85,7 @@ Container images are configured using parameters passed at runtime (such as thos
 * ruTorrent
 
 #### Requirements
-* VPN image: [qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) (Supports PIA, Mullvad & Windscribe (coming soon) )
+* VPN image: [qmcgaw/gluetun](https://github.com/qdm12/gluetun) (Supports PIA, Mullvad, Windscribe and others)
 
 | Parameter | Function |
 | :----: | --- |
@@ -126,7 +129,7 @@ SSH onto Rebuild-DNDC container
 
 You can use any VPN image you want but the following is recommended and ruTorrent port forwarding with RDNDC is supported with the following image (PIA only!)
 
-[qmcgaw/private-internet-access](https://github.com/qdm12/private-internet-access-docker) [Supports PIA, Mullvad & Windscribe (coming soon) ]
+[qmcgaw/gluetun](https://github.com/qdm12/gluetun) [Supports PIA, Mullvad, Windscribe and others ]
 
 ### Credits
 
