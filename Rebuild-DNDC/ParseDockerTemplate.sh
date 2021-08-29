@@ -1,13 +1,15 @@
 #ParseDockerTemplate.sh
-#ver=2.0
+#ver=2.1
 #Author - unRAID forum member: skidelo
-#Contributors - Alex R. Berg, eafx
+#Contributors - Alex R. Berg, eafx, JimmyGerms
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/
 #This script relies on 'xmllint' which is installed by default in unRAID v6.0.1
 
-#ChangeLog - Fixed env variable parsing - eafx
-#		   - Added IP argument parsing - eafx
-#          - Workaround for pulling Timezone  -eafx
+#ChangeLog 
+#			- Fixed env variable parsing - eafx
+#			- Added IP argument parsing - eafx
+#			- Workaround for pulling Timezone  -eafx
+#			- Added CPU pinning - JimmyGerms
 
 #Variable declarations and initialization
 docker="/usr/bin/docker run -d"
@@ -85,6 +87,17 @@ add_ip(){
 	if [[ $ip != "" ]]; then
 		docker_string+=" --ip=\"$ip\""
 		[ "$verbose" = "1" ] && echo "Found IP:  --ip=\"$ip\""
+	fi
+}
+
+add_cpuset(){
+	status=0
+	xmllint --noout --xpath "//CPUset/text()" $xmlFile > /dev/null 2>&1
+	status=$?
+	if [[ $status == 0 ]]; then
+		cpus=$(xmllint --xpath "//CPUset/text()" $xmlFile)
+		docker_string+=" --cpuset-cpus=\"$cpus\""
+		[ "$verbose" = "1" ] && echo "Found CPU Pinning:  $cpus"
 	fi
 }
 
@@ -213,6 +226,7 @@ do
 	docker_string="$docker"
 
 	add_name
+	add_cpuset
 	add_net
 	add_ip	
 	add_privileged
