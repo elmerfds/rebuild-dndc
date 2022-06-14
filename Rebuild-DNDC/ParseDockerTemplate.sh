@@ -103,7 +103,12 @@ add_cpuset(){
 
 add_net(){
 	call_add_ports=0
-	net=$(xmllint --xpath "/Container/Networking/Mode/text()" $xmlFile 2> /dev/null)
+	nettest=$(xmllint --xpath "/Container/Networking/Mode/text()" $xmlFile 2> /dev/null)
+	if [ -z "$nettest" ]; then
+		net=$(xmllint --xpath "/Container/Network/text()" $xmlFile 2> /dev/null);
+	else
+		net=$(xmllint --xpath "/Container/Networking/Mode/text()" $xmlFile 2> /dev/null)
+	fi
 	docker_string+=" --net=\"$net\""
 	if [[ $net == bridge ]]; then
 		call_add_ports=1
