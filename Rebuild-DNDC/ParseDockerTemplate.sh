@@ -1,15 +1,16 @@
 #ParseDockerTemplate.sh
-#ver=2.1
+#ver=2.2
 #Author - unRAID forum member: skidelo
-#Contributors - Alex R. Berg, eafx, JimmyGerms
+#Contributors - Alex R. Berg, eafx, JimmyGerms, Phil-Barker
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/
 #This script relies on 'xmllint' which is installed by default in unRAID v6.0.1
 
-#ChangeLog 
-#			- Fixed env variable parsing - eafx
-#			- Added IP argument parsing - eafx
-#			- Workaround for pulling Timezone  -eafx
-#			- Added CPU pinning - JimmyGerms
+#ChangeLog
+#   - Fixed env variable parsing - eafx
+#   - Added IP argument parsing - eafx
+#   - Workaround for pulling Timezone  -eafx
+#   - Added CPU pinning - JimmyGerms
+#   - Fixed port, volume and env variable parsing - Phil Barker
 
 #Variable declarations and initialization
 docker="/usr/bin/docker run -d"
@@ -92,7 +93,7 @@ add_ip(){
 
 add_cpuset(){
 	status=0
-	xmllint --noout --xpath "//CPUset/text()" $xmlFile > /dev/null 2>&1
+	xmllint --noout --xpath "/descendant::CPUset/text()" $xmlFile > /dev/null 2>&1
 	status=$?
 	if [[ $status == 0 ]]; then
 		cpus=$(xmllint --xpath "//CPUset/text()" $xmlFile)
@@ -117,7 +118,7 @@ add_net(){
 }
 
 add_privileged(){
-	privileged=$(xmllint --xpath "//Privileged/text()" $xmlFile 2> /dev/null)
+	privileged=$(xmllint --xpath "/descendant::Privileged/text()" $xmlFile 2> /dev/null)
 	if [[ $privileged == "true" ]]; then
 		docker_string+=" --privileged=\"$privileged\""
 		[ "$verbose" = "1" ] && echo "Found Privilege:  --privileged=\"$privileged\""
@@ -128,13 +129,17 @@ add_envars(){
 	status=0
 	numEnVars=1
 	while [[ $status == 0 ]]; do
-		xmllint --noout --xpath /Container/Environment/Variable[$numEnVars]/Name $xmlFile > /dev/null 2>&1
+		xmllint --noout --xpath "/Container/Config[$numEnVars]" $xmlFile > /dev/null 2>&1
 		status=$?
 		if [[ $status == 0 ]]; then
-			name=$(xmllint --xpath "/Container/Environment/Variable[$numEnVars]/Name/text()" $xmlFile) 
-			value=$(xmllint --xpath "/Container/Environment/Variable[$numEnVars]/Value/text()" $xmlFile)
-			docker_string+=" -e $name=\"$value\""
-			[ "$verbose" = "1" ] && echo "Found Environment:  -e $name=\"$value\"" 
+			type=$(xmllint --xpath "/Container/Config[$numEnVars]/@Type" $xmlFile)
+			type=`echo "$type" | cut -d'"' -f 2`
+			if [[ $type == 'Variable' ]]; then
+				name=$(xmllint --xpath "/Container/Config[$numEnVars]/@Target" $xmlFile | cut -d '"' -f 2)
+				value=$(xmllint --xpath "/Container/Config[$numEnVars]/text()" $xmlFile | cut -d '"' -f 2)
+				docker_string+=" -e $name=\"$value\""
+				[ "$verbose" = "1" ] && echo "Found Environment:  -e $name=\"$value\""
+			fi
 			((numEnVars++))
 		else
 			break
@@ -144,10 +149,10 @@ add_envars(){
 
 add_timezone(){
 	#bindtime=$(xmllint --xpath "//BindTime/text()" $xmlFile 2> /dev/null)
-    #if [[ $bindtime == "true" ]]; then	
-	#	timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
-	#	docker_string+=" -e TZ=$timezone"
-	#	[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
+    #if [[ $bindtime == "true" ]]; then
+	#       timezone=$(cat /boot/config/ident.cfg | grep timeZone | sed -e 's/timeZone=//' -e 's/\r//g')
+	#       docker_string+=" -e TZ=$timezone"
+	#       [ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=$timezone"
 	#fi
 		docker_string+=" -e TZ=\"$TZ\""
 		[ "$verbose" = "1" ] && echo "Found TimeZone:  -e TZ=\"$TZ\""
@@ -157,19 +162,23 @@ add_ports(){
 	status=0
 	numPorts=1
 	while [[ $status == 0 ]]; do
-        xmllint --noout --xpath //Port[$numPorts] $xmlFile > /dev/null 2>&1
-        status=$?
-        if [[ $status == 0 ]]; then
-            hostPort=$(xmllint --xpath "//Port[$numPorts]/HostPort/text()" $xmlFile)
-			containerPort=$(xmllint --xpath "//Port[$numPorts]/ContainerPort/text()" $xmlFile)
-			protocol=$(xmllint --xpath "//Port[$numPorts]/Protocol/text()" $xmlFile)
-			currentArg=" -p $hostPort:$containerPort/$protocol"
-            docker_string+=$currentArg
-			[ "$verbose" = "1" ] && echo "Found Port: $currentArg"
-            ((numPorts++))
+		xmllint --noout --xpath "/Container/Config[$numPorts]" $xmlFile > /dev/null 2>&1
+		status=$?
+		if [[ $status == 0 ]]; then
+			type=$(xmllint --xpath "/Container/Config[$numPorts]/@Type" $xmlFile)
+			type=`echo "$type" | cut -d'"' -f 2`
+			if [[ $type == 'Port' ]]; then
+				hostPort=$(xmllint --xpath "/Container/Config[$numPorts]/@Target" $xmlFile | cut -d '"' -f 2)
+				containerPort=$(xmllint --xpath "/Container/Config[$numPorts]/text()" $xmlFile)
+				protocol=$(xmllint --xpath "/Container/Config[$numPorts]/@Mode" $xmlFile | cut -d '"' -f 2)
+				currentArg=" -p $hostPort:$containerPort/$protocol"
+				docker_string+=$currentArg
+				[ "$verbose" = "1" ] && echo "Found Port: $currentArg"
+			fi
+			((numPorts++))
 	    else
-            break
-        fi
+	    break
+	fi
 	done
 }
 
@@ -177,19 +186,22 @@ add_volumes(){
 	status=0
 	numVolumes=1
 	while [[ $status == 0 ]]; do
-		xmllint --noout --xpath //Volume[$numVolumes]/HostDir $xmlFile > /dev/null 2>&1
+		xmllint --noout --xpath "/Container/Config[$numVolumes]" $xmlFile > /dev/null 2>&1
 		status=$?
 		if [[ $status == 0 ]]; then
-			hostDir=$(xmllint --xpath "/Container/Data/Volume[$numVolumes]/HostDir/text()" $xmlFile)
-			containerDir=$(xmllint --xpath "/Container/Data/Volume[$numVolumes]/ContainerDir/text()" $xmlFile)
-			mode=$(xmllint --xpath "/Container/Data/Volume[$numVolumes]/Mode/text()" $xmlFile)
-			#TO DO: Succesfully wrap hostDir and containerDir in double quotes to allow
-			#for spaces in filenames.  Using escape characters does not work here.
-			#Docker complains about the volume mapppings not being an 'absolute path'.
-			#This is because bash wraps strings with escape characters in strong quotes,
-			#making it so Docker receives the argument with escape characters included.
-			docker_string+=" -v \"$hostDir\":\"$containerDir\":$mode"
-			[ "$verbose" = "1" ] && echo "Found volume:  -v \"$hostDir\":\"$containerDir\":$mode"
+			type=$(xmllint --xpath "/Container/Config[$numVolumes]/@Type" $xmlFile | cut -d '"' -f 2)
+			if [[ $type == 'Path' ]]; then
+				hostDir=$(xmllint --xpath "/Container/Config[$numVolumes]/text()" $xmlFile)
+				containerDir=$(xmllint --xpath "/Container/Config[$numVolumes]/@Target" $xmlFile | cut -d '"' -f 2)
+				mode=$(xmllint --xpath "/Container/Config[$numVolumes]/@Mode" $xmlFile | cut -d '"' -f 2)
+				#TO DO: Succesfully wrap hostDir and containerDir in double quotes to allow
+				#for spaces in filenames.  Using escape characters does not work here.
+				#Docker complains about the volume mapppings not being an 'absolute path'.
+				#This is because bash wraps strings with escape characters in strong quotes,
+				#making it so Docker receives the argument with escape characters included.
+				docker_string+=" -v \"$hostDir\":\"$containerDir\":$mode"
+				[ "$verbose" = "1" ] && echo "Found volume:  -v \"$hostDir\":\"$containerDir\":$mode"
+			fi
 			((numVolumes++))
 		else
 			break
@@ -199,10 +211,10 @@ add_volumes(){
 
 add_extraparams(){
 	status=0
-	xmllint --noout --xpath "//ExtraParams/text()" $xmlFile > /dev/null 2>&1
-    status=$?
-    if [[ $status == 0 ]]; then
-		extraparams=$(xmllint --xpath "//ExtraParams/text()" $xmlFile)
+	xmllint --noout --xpath "/descendant::ExtraParams/text()" $xmlFile > /dev/null 2>&1
+	status=$?
+	if [[ $status == 0 ]]; then
+		extraparams=$(xmllint --xpath "/descendant::ExtraParams/text()" $xmlFile)
 		docker_string="$docker_string $extraparams"
 		[ "$verbose" = "1" ] && echo "Found Extra params:  $extraparams"
 	fi
@@ -210,7 +222,7 @@ add_extraparams(){
 
 add_repository(){
 	repository=$(xmllint --xpath "/Container/Repository/text()" $xmlFile)
-    docker_string+=" $repository"
+	docker_string+=" $repository"
 	[ "$verbose" = "1" ] && echo "Found Repo:  $repository"
 }
 
@@ -233,7 +245,7 @@ do
 	add_name
 	add_cpuset
 	add_net
-	add_ip	
+	add_ip
 	add_privileged
 	add_envars
 	add_timezone
@@ -242,21 +254,21 @@ do
 	add_extraparams
 	add_repository
 
-	# we could check for existing container with something like this  
+	# we could check for existing container with something like this
 
 
 	#Run the docker image with arguments based on .xml file
 	[ "$verbose" = "1" ] || [ "$dryrun" = "1" ] && echo "$docker_string"
 
 	if [ $(docker ps -f name=$container_name | wc -l) = "1" ] ; then
-		# Run through bash or eval to get \" converted into quoted strings and avoid errors like 'strconv.ParseBool: parsing "\"true\"": invalid syntax' 
-		[ "$dryrun" = "0" ] && eval $docker_string && wait $!;		
+		# Run through bash or eval to get \" converted into quoted strings and avoid errors like 'strconv.ParseBool: parsing "\"true\"": invalid syntax'
+		[ "$dryrun" = "0" ] && eval $docker_string && wait $!;
 	    status=$?
 	    if [[ $status != 0 ]]; then
-	    	echo "Command was: $docker_string"
-	    	echo "Note this script does not parse xml encoded strings correctly (like &#xF8;), which may cause docker to fail."
+		echo "Command was: $docker_string"
+		echo "Note this script does not parse xml encoded strings correctly (like &#xF8;), which may cause docker to fail."
 		fi
-	else 
+	else
 		echo "Container already exists: $container_name"
 	fi
 	echo
