@@ -37,7 +37,12 @@ templatename=''
 datetime=$(date)
 buildcont_cmd="$rundockertemplate_script -v $docker_tmpl_loc/my-$templatename.xml"
 mastercontid=$(docker inspect --format="{{.Id}}" $mastercontname)
-getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
+if [[ -z "$custom_network" || "$custom_network" = "false" ]]
+then
+    getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
+else
+    getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.Networks.${custom_network}.EndpointID }}")
+fi
 get_container_names=($(docker ps -a --format="{{ .Names }}"))
 get_container_ids=($(docker ps -a --format="{{ .ID }}"))
 save_no_mcontids=${save_no_mcontids:-20}
