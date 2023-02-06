@@ -35,11 +35,10 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:unraid,${{ env.IMAGE_NAME }}:unraid-d-${{ env.GITHUB_SHA }}
+          tags: ${{ env.IMAGE_NAME }}:unraid-d
           build-args: |
             --platform linux/amd64,linux/arm64,linux/arm/v7
             --progress plain
-            --build-arg GITHUB_SHA=${{ env.GITHUB_SHA }}
             --build-arg BUILD_DATE=${{ env.BUILD_DATE }}
             --build-arg VCS_REF=${{ env.VCS_REF }}
 
@@ -47,4 +46,3 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
           docker push ${{ env.IMAGE_NAME }}:unraid
-          docker push ${{ env.IMAGE_NAME }}:unraid-d-${{ env.GITHUB_SHA }}
