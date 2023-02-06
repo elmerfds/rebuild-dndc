@@ -35,7 +35,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:latest,${{ env.IMAGE_NAME }}:latest-${{ env.GITHUB_SHA }}
+          tags: ${{ env.IMAGE_NAME }}:unraid-d,${{ env.IMAGE_NAME }}:unraid-d-${{ env.GITHUB_SHA }}
           build-args: |
             --platform linux/amd64,linux/arm64,linux/arm/v7
             --progress plain
@@ -46,5 +46,5 @@ jobs:
       - name: Publish to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-          docker push eafxx/rebuild-dndc:unraid-d
-          docker push eafxx/rebuild-dndc:unraid-d-${{ env.GITHUB_SHA }}
+          docker push docker.io/eafxx/rebuild-dndc:unraid-d
+          docker push docker.io/eafxx/rebuild-dndc:unraid-d-${{ env.GITHUB_SHA }}
