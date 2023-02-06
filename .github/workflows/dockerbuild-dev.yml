@@ -6,7 +6,7 @@ on:
       - 'README.md'
       - '.github/workflows/*'      
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 env:
