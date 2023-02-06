@@ -12,6 +12,8 @@ on:
 env:
   DOCKER_CLI_EXPERIMENTAL: enabled
   IMAGE_NAME: ghactiontest
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PWD }}
 
 jobs:
   build-and-push:
@@ -45,6 +47,6 @@ jobs:
 
       - name: Publish to Docker Hub
         run: |
-          docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_PWD }}" --password-stdin
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
           docker push ${{ env.IMAGE_NAME }}:latest
           docker push ${{ env.IMAGE_NAME }}:latest-${{ env.GITHUB_SHA }}
