@@ -110,11 +110,13 @@ add_net(){
 	else
 		net=$(xmllint --xpath "/Container/Networking/Mode/text()" $xmlFile 2> /dev/null)
 	fi
-	docker_string+=" --net=\"$net\""
-	if [[ $net == bridge ]]; then
-		call_add_ports=1
+	if [[ $net != "none" ]]; then
+		docker_string+=" --net=\"$net\""
+		if [[ $net == bridge ]]; then
+			call_add_ports=1
+		fi
+		[ "$verbose" = "1" ] && echo "Found Net:  --net=\"$net\""
 	fi
-	[ "$verbose" = "1" ] && echo "Found Net:  --net=\"$net\""
 }
 
 add_privileged(){
