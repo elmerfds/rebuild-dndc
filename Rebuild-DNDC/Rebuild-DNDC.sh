@@ -134,7 +134,12 @@ first_run()
     then
         printf "A. SKIPPING: FIRST RUN SETUP\n" 
         was_run=0
-        getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
+        if [[ -z "$custom_network" || "$custom_network" = "false" ]]
+        then
+            getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.EndpointID }}")
+        else
+            getmastercontendpointid=$(docker inspect $mastercontname --format="{{ .NetworkSettings.Networks.${custom_network}.EndpointID }}")
+        fi
         currentendpointid=$(<$mastercontepfile_loc/mastercontepid.tmp)      
     fi
 }
