@@ -13,7 +13,7 @@
 #   - Fixed port, volume and env variable parsing - Phil Barker
 
 #Variable declarations and initialization
-docker="/usr/bin/docker run -d"
+docker="/usr/bin/docker run -d --label net.unraid.docker.managed=dockerman"
 xmllint_path="/usr/bin/xmllint"
 verbose=0
 dryrun=0
