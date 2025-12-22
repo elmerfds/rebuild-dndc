@@ -1,5 +1,5 @@
 #ParseDockerTemplate.sh
-#ver=2.2
+#ver=2.3
 #Author - unRAID forum member: skidelo
 #Contributors - Alex R. Berg, eafx, JimmyGerms, Phil-Barker
 #Source: https://forums.unraid.net/topic/40016-start-docker-template-via-command-line/
@@ -11,6 +11,7 @@
 #   - Workaround for pulling Timezone  -eafx
 #   - Added CPU pinning - JimmyGerms
 #   - Fixed port, volume and env variable parsing - Phil Barker
+#   - Fixed container name check to use exact match (issue #62) - Phil Barker
 
 #Variable declarations and initialization
 docker="/usr/bin/docker run -d"
@@ -260,7 +261,7 @@ do
 	#Run the docker image with arguments based on .xml file
 	[ "$verbose" = "1" ] || [ "$dryrun" = "1" ] && echo "$docker_string"
 
-	if [ $(docker ps -f name=$container_name | wc -l) = "1" ] ; then
+	if [ $(docker ps -f "name=^${container_name}$" | wc -l) = "1" ] ; then
 		# Run through bash or eval to get \" converted into quoted strings and avoid errors like 'strconv.ParseBool: parsing "\"true\"": invalid syntax'
 		[ "$dryrun" = "0" ] && eval $docker_string && wait $!;
 	    status=$?
